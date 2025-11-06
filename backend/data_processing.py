@@ -4,13 +4,8 @@ csv_dir = '/Users/lucaswaunn/projects/Portfolio-Analysis/csv_imports/'
 
 #data processing packages
 import pandas as pd
-import numpy as np
 import sqlite3
 import re
-
-#visualization packages
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # load data into sqlite3 database
 connection = sqlite3.connect('data/positions.db')
