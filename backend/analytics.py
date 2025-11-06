@@ -41,7 +41,7 @@ def graph_data():
     fig.tight_layout()
     
     return fig  # RETURN the figure, don't show it
-  
+
 def graph_allocation():
     # Connect to database
     connection = sqlite3.connect('data/positions.db')
