@@ -1,0 +1,17 @@
+"Positions for TESTACCT as of 09:30 AM ET, 11/06/2025"
+
+Individual ...123
+
+"Symbol","Description","Qty (Quantity)","Price","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain $ (Gain/Loss $)","Gain % (Gain/Loss %)","Reinvest?","Reinvest Capital Gains?","Security Type",
+"AAPL","APPLE INC","25","$225.50","$3.25","1.46%","$5,637.50","$81.25","1.46%","$4,125.00","$1,512.50","36.67%","Yes","N/A","Equity",
+"GOOGL","ALPHABET INC CLASS A","15","$142.30","$-1.20","-0.84%","$2,134.50","$-18.00","-0.84%","$1,875.00","$259.50","13.84%","Yes","N/A","Equity",
+"NVDA","NVIDIA CORP","8","$145.75","$5.50","3.92%","$1,166.00","$44.00","3.92%","$680.00","$486.00","71.47%","Yes","N/A","Equity",
+"TSLA","TESLA INC","12","$248.30","$-2.10","-0.84%","$2,979.60","$-25.20","-0.84%","$2,640.00","$339.60","12.86%","No","N/A","Equity",
+"VOO","VANGUARD S&P 500 ETF","10","$512.40","$2.05","0.4%","$5,124.00","$20.50","0.4%","$4,800.00","$324.00","6.75%","Yes","N/A","ETFs & Closed End Funds",
+"VTI","VANGUARD TOTAL STK MKT ETF","20","$285.60","$1.15","0.4%","$5,712.00","$23.00","0.4%","$5,200.00","$512.00","9.85%","Yes","N/A","ETFs & Closed End Funds",
+"SCHD","SCHWAB US DVD EQUITY ETF","30","$31.25","$0.08","0.26%","$937.50","$2.40","0.26%","$825.00","$112.50","13.64%","Yes","Yes","ETFs & Closed End Funds",
+"VTSAX","VANGUARD TOTAL STK MKT IDX","45.267","$129.85","$0.52","0.4%","$5,878.93","$23.54","0.4%","N/A","$878.93","17.59%","Yes","Yes","Mutual Fund",
+"FXAIX","FIDELITY 500 INDEX","78.942","$189.20","$0.76","0.4%","$14,933.43","$59.57","0.4%","N/A","$2,433.43","19.46%","Yes","Yes","Mutual Fund",
+"BTC","BITCOIN","0.0425","$68,250.00","$1,425.00","2.13%","$2,900.63","$60.59","2.13%","$2,550.00","$350.63","13.75%","No","N/A","Cryptocurrency",
+"Cash & Cash Investments","--","--","--","--","--","$1,250.00","$0.00","0%","--","--","--","--","--","Cash and Money Market",
+"Account Total","","--","--","--","--","$48,654.09","$271.65","0.56%","$38,695.00","$9,959.09","25.73%","--","--","--",
