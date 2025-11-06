@@ -15,12 +15,30 @@
 html {
   margin: 0;
   padding: 0;
-  background-image: linear-gradient(45deg, var(--blue), var(--green));
+  background: linear-gradient(45deg, var(--blue), var(--green));
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
   height: 100vh;
   font-family: 'ClashDisplay', sans-serif;
+}
+
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(https://grainy-gradients.vercel.app/noise.svg);
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+}
+
+svg {
+  width: 100%;
+  height: 100vh;
 }
 
 .navbar {
