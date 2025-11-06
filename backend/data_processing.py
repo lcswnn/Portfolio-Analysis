@@ -27,9 +27,12 @@ def load_csv_with_date(file_path):
     df['Date'] = date_str
     return df
   
+#def method to load csv to database
 def load_csv_to_db():
+  #decode csv directory path
   directory = os.fsencode(csv_dir)
   for file in os.listdir(directory):
+    #if first file, replace table, else append
     if file == os.listdir(directory)[0]:
       filename = os.fsdecode(file)
       if filename.endswith('.csv'):
@@ -47,6 +50,7 @@ def load_csv_to_db():
           df.to_sql('positions', connection, if_exists='append', index=False)
           print(f"Added {len(df)} rows from {df['Date'].iloc[0]}")
 
+#load csvs to database
 load_csv_to_db()
 
 # Close the connection
