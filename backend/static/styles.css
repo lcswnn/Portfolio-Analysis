@@ -31,14 +31,9 @@ html::before {
   width: 100%;
   height: 100%;
   background-image: url(https://grainy-gradients.vercel.app/noise.svg);
-  opacity: 0.3;
+  opacity: 0.4;
   z-index: -1;
   pointer-events: none;
-}
-
-svg {
-  width: 100%;
-  height: 100vh;
 }
 
 .navbar {
