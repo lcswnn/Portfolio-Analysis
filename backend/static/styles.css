@@ -9,7 +9,7 @@
   --blue: #4F76F6;
   --green: #77F2A1;
   --white: #F9F9F9;
-  --dark-grey: #1F2B37;
+  --dark-grey: #293949;
 }
 
 html {
@@ -99,28 +99,37 @@ ul li {
   margin-top: 35px;
 }
 
-.fade-in-title {
-  opacity: 0; /* Start completely transparent */
-  transform: translateY(20px); /* Start slightly below its final position */
-  animation: fadeInFromBottom 1.1s ease-out forwards; /* Apply the animation */
-}
-
-.fade-in-title2 {
-  opacity: 0; /* Start completely transparent */
-  transform: translateY(20px); /* Start slightly below its final position */
-  animation: fadeInFromBottom 1.2s ease-out forwards; /* Apply the animation */
-  animation-delay: 0.7s; /* Delay for staggered effect */
-}
-
-@keyframes fadeInFromBottom {
-  from {
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(60%);
     opacity: 0;
-    transform: translateY(20px);
   }
-  to {
+  100% {
+    transform: translateY(0%);
     opacity: 1;
-    transform: translateY(0); /* Move to its original position */
   }
+}
+
+@keyframes fadeInUp2 {
+  0% {
+    transform: translateY(190%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.fadeInUp-animation {
+  animation: 1.7s fadeInUp;
+}
+
+.fadeInUp-animation2 {
+  animation: 1.4s fadeInUp2;
+  animation-delay: 0.3s;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
 .header h1 {

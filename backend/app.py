@@ -6,9 +6,8 @@ import analytics
 
 app = Flask(__name__)
 
-@app.route('/home')
 @app.route('/')
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/returns.png')
@@ -17,7 +16,7 @@ def returns_png():
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
-  
+
 @app.route('/pie.png')
 def pie_png():
     fig = analytics.graph_allocation()
