@@ -1,0 +1,17 @@
+"Positions for TESTACCT as of 09:30 AM ET, 01/01/2026"
+
+"Individual ...123"
+
+"Symbol","Description","Qty (Quantity)","Price","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain $ (Gain/Loss $)","Gain % (Gain/Loss %)","Reinvest?","Reinvest Capital Gains?","Security Type",""
+"AAPL","APPLE INC","25","$227.50","$2.75","1.22%","$5,687.50","$68.81","1.22%","$4,125.00","$1,562.50","37.88%","Yes","N/A","Equity",""
+"GOOGL","ALPHABET INC CLASS A","15","$146.80","$-0.80","-0.54%","$2,202.00","$-12.01","-0.54%","$1,875.00","$327.00","17.44%","Yes","N/A","Equity",""
+"NVDA","NVIDIA CORP","8","$152.40","$0.42","0.28%","$1,219.20","$3.34","0.28%","$680.00","$539.20","79.29%","Yes","N/A","Equity",""
+"TSLA","TESLA INC","12","$247.60","$0.99","0.40%","$2,971.20","$11.89","0.40%","$2,640.00","$331.20","12.55%","No","N/A","Equity",""
+"VOO","VANGUARD S&P 500 ETF","10","$508.50","$-5.36","-1.04%","$5,085.00","$-53.60","-1.04%","$4,800.00","$285.00","5.94%","Yes","N/A","ETFs & Closed End Funds",""
+"VTI","VANGUARD TOTAL STK MKT ETF","20","$296.40","$-2.43","-0.81%","$5,928.00","$-48.60","-0.81%","$5,200.00","$728.00","14.00%","Yes","N/A","ETFs & Closed End Funds",""
+"SCHD","SCHWAB US DVD EQUITY ETF","30","$31.80","$-0.44","-1.37%","$954.00","$-13.09","-1.37%","$825.00","$129.00","15.64%","Yes","Yes","ETFs & Closed End Funds",""
+"VTSAX","VANGUARD TOTAL STK MKT IDX","45.267","$132.50","$1.71","1.31%","$5,997.88","$77.48","1.31%","N/A","$1,199.58","20.00%","Yes","Yes","Mutual Fund",""
+"FXAIX","FIDELITY 500 INDEX","78.942","$190.80","$-1.03","-0.54%","$15,062.00","$-81.14","-0.54%","N/A","$3,012.40","20.00%","Yes","Yes","Mutual Fund",""
+"BTC","BITCOIN","0.0425","$76,500.00","$-917.91","-1.19%","$3,251.25","$-39.01","-1.19%","$2,550.00","$701.25","27.50%","No","N/A","Cryptocurrency",""
+"Cash & Cash Investments","--","--","--","--","--","$1,250.00","$0.00","0%","--","--","--","--","--","Cash and Money Market",""
+"Account Total","","--","--","--","--","$53,608.03","$-85.94","-0.16%","$23,945.00","$29,663.03","123.88%","--","--","--",""

@@ -1,0 +1,17 @@
+"Positions for TESTACCT as of 09:30 AM ET, 12/25/2025"
+
+"Individual ...123"
+
+"Symbol","Description","Qty (Quantity)","Price","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain $ (Gain/Loss $)","Gain % (Gain/Loss %)","Reinvest?","Reinvest Capital Gains?","Security Type",""
+"AAPL","APPLE INC","25","$258.40","$1.53","0.60%","$6,460.00","$38.28","0.60%","$4,125.00","$2,335.00","56.61%","Yes","N/A","Equity",""
+"GOOGL","ALPHABET INC CLASS A","15","$167.20","$0.43","0.26%","$2,508.00","$6.47","0.26%","$1,875.00","$633.00","33.76%","Yes","N/A","Equity",""
+"NVDA","NVIDIA CORP","8","$188.50","$1.02","0.54%","$1,508.00","$8.13","0.54%","$680.00","$828.00","121.76%","Yes","N/A","Equity",""
+"TSLA","TESLA INC","12","$289.80","$-2.43","-0.83%","$3,477.60","$-29.13","-0.83%","$2,640.00","$837.60","31.73%","No","N/A","Equity",""
+"VOO","VANGUARD S&P 500 ETF","10","$558.20","$6.32","1.14%","$5,582.00","$63.23","1.14%","$4,800.00","$782.00","16.29%","Yes","N/A","ETFs & Closed End Funds",""
+"VTI","VANGUARD TOTAL STK MKT ETF","20","$322.40","$-1.90","-0.59%","$6,448.00","$-38.09","-0.59%","$5,200.00","$1,248.00","24.00%","Yes","N/A","ETFs & Closed End Funds",""
+"SCHD","SCHWAB US DVD EQUITY ETF","30","$34.70","$-0.06","-0.17%","$1,041.00","$-1.76","-0.17%","$825.00","$216.00","26.18%","Yes","Yes","ETFs & Closed End Funds",""
+"VTSAX","VANGUARD TOTAL STK MKT IDX","45.267","$144.20","$-1.48","-1.02%","$6,535.51","$-67.12","-1.02%","N/A","$1,307.10","20.00%","Yes","Yes","Mutual Fund",""
+"FXAIX","FIDELITY 500 INDEX","78.942","$208.50","$-0.36","-0.17%","$16,461.61","$-28.07","-0.17%","N/A","$3,292.32","20.00%","Yes","Yes","Mutual Fund",""
+"BTC","BITCOIN","0.0425","$98,400.00","$1,045.91","1.07%","$4,182.00","$44.45","1.07%","$2,550.00","$1,632.00","64.00%","No","N/A","Cryptocurrency",""
+"Cash & Cash Investments","--","--","--","--","--","$1,250.00","$0.00","0%","--","--","--","--","--","Cash and Money Market",""
+"Account Total","","--","--","--","--","$59,453.72","$-3.61","-0.01%","$23,945.00","$35,508.72","148.30%","--","--","--",""

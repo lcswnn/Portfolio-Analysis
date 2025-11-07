@@ -1,6 +1,6 @@
 #os
 import os
-csv_dir = '/Users/lucaswaunn/projects/Portfolio-Analysis/csv_imports/'
+csv_dir = '/Users/lucaswaunn/projects/Portfolio-Analysis/backend/csv_imports/'
 
 #data processing packages
 import pandas as pd
@@ -8,7 +8,7 @@ import sqlite3
 import re
 
 # load data into sqlite3 database
-connection = sqlite3.connect('data/positions.db')
+connection = sqlite3.connect('backend/data/positions.db')
 
 # Function to extract date and load CSV
 def load_csv_with_date(file_path):

@@ -8,21 +8,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-@app.route('/returns.png')
-def returns_png():
-    fig = analytics.graph_data()
-    output = io.BytesIO()
-    FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
-
-@app.route('/pie.png')
-def pie_png():
-    fig = analytics.graph_allocation()
-    output = io.BytesIO()
-    FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
+    # Generate the animated timeline graph
+    graph_html = analytics.create_animated_timeline_graph()
+    return render_template('index.html', graph_html=graph_html)
 
 if __name__ == '__main__':
     app.run(debug=True)

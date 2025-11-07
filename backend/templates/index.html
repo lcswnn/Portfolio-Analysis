@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <div class="nav-bar">
+  <div id="nav-bar">
     <ul>
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline"> About </a></li>
@@ -17,10 +17,27 @@
       <li><a class="hover-underline"> Profile </a></li>
     </ul>
   </div>
+
   <div class="header">
     <h1 class="fadeInUp-animation">WealthLens</h1>
     <h3 class="fadeInUp-animation2">View, Analyze, and Optimize Your Investments</h3>
   </div>
-  
+
+  <div class="graph-container">
+    {{ graph_html|safe }}
+  </div>
+
+  <script>
+    // Auto-play the animation when the page loads
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const playButton = document.querySelector('.modebar-btn[data-title="Play"]');
+        if (playButton) {
+          playButton.click();
+        }
+      }, 500);
+    });
+  </script>
+
 </body>
 </html>
