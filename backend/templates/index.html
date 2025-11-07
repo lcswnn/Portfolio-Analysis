@@ -21,10 +21,12 @@
       <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
     </ul>
   </div>
+
   <div class="header">
     <h1 class="fadeInUp-animation">OptiFinance</h1>
     <h2 class="fadeInUp-animation2">View, Analyze, and Optimize Your Investments</h2>
   </div>
+
   <div class="graph-container">
     {{ graph_html|safe }}
   </div>
@@ -52,6 +54,17 @@
     </div>
     <div id="button">
       <a href="{{ url_for('about') }}" class="button fadeInUp-animation2">Look under the hood.</a>
+    </div>
+  </div>
+
+  <div class="port-stats-example">
+    <div class="port-stats-container">
+      <div id="port-health-example" class="fadeInUpLowOpacity2">
+        <h3>Portfolio Health: <span class="counter" data-target="89.5"></span></h3>
+      </div>
+      <div id="port-risk-example" class="fadeInUpLowOpacity2">
+        <h3>Risk Level: <span class="counter" data-target="34.2"></span></h3>
+      </div>
     </div>
   </div>
 

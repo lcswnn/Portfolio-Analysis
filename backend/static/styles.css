@@ -307,15 +307,25 @@ p {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
+#secondary-header {
+  color: var(--white);
+  padding: 10px 0;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 6rem;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
 .forms-container {
   display: flex;
   justify-content: space-around;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   flex-wrap: wrap;
   margin: 50px auto;
   max-width: 1600px;
   max-height: 800px;
+  padding-top: 20px;
 }
 
 .log-in-container,
@@ -488,6 +498,56 @@ textarea {
 .fadeInUpLowOpacity4.visible {
   animation: 1.4s fadeInUpLowOpacity4 forwards;
   animation-delay: 0.9s;
+}
+
+/* Animating decimal counter */
+@property --number {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.counter {
+  --number: 0;
+  counter-reset: num calc(var(--number));
+  animation: counter 3s forwards;
+}
+
+
+@keyframes counter {
+  to {
+    --number: var(--target-value);
+  }
+}
+
+.port-stats-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 1200px;
+  gap: 100px;
+  margin: 0 auto;
+}
+
+#port-health-example h3 {
+  text-align: left;
+  padding: 5px 5px;
+}
+
+#port-risk-example h3 {
+  text-align: right;
+  padding: 5px 5px;
+}
+
+.port-stats-container > div {
+  flex: 1;
+  text-align: center;
+}
+
+.port-stats-container h3 {
+  margin: 0;
 }
 
 .footer p{

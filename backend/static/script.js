@@ -44,15 +44,15 @@ const animationObserver = new IntersectionObserver((entries) => {
       if (entry.target.classList.contains('fadeInUpLowOpacity2')) {
         setTimeout(() => {
           entry.target.classList.add('visible');
-        }, 200); //0.2s delay
+        }, 150); //0.2s delay
       } else if (entry.target.classList.contains('fadeInUpLowOpacity3')) {
         setTimeout(() => {
           entry.target.classList.add('visible');
-        }, 500); // 0.5s delay
+        }, 430); // 0.5s delay
       } else if (entry.target.classList.contains('fadeInUpLowOpacity4')) {
         setTimeout(() => {
           entry.target.classList.add('visible');
-        }, 900); // 0.9s delay
+        }, 810); // 0.9s delay
       } else {
         entry.target.classList.add('visible');
       }
@@ -68,6 +68,58 @@ const animationObserver = new IntersectionObserver((entries) => {
 // Observe all animated elements
 animatedElements.forEach(element => {
   animationObserver.observe(element);
+});
+
+// Counter animation for the portfolio health number using JavaScript
+const animateCounter = (element, targetValue, duration = 3000) => {
+  if (element.hasAttribute('data-animated')) return;
+
+  element.setAttribute('data-animated', 'true');
+  const startValue = 0;
+  const startTime = Date.now();
+
+  const updateCounter = () => {
+    const currentTime = Date.now();
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const currentValue = startValue + (targetValue - startValue) * progress;
+
+    // Update the text content directly
+    element.textContent = currentValue.toFixed(1) + '%';
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCounter);
+    }
+  };
+
+  updateCounter();
+};
+
+// Observer for the parent container of counters (to detect when they come into view)
+const counterParentObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // Find all counter elements within this parent
+      const counters = entry.target.querySelectorAll('.counter');
+      counters.forEach(counter => {
+        const targetValue = parseFloat(counter.getAttribute('data-target'));
+        // Add a small delay to let the parent fade in first (150ms matches fadeInUpLowOpacity2 delay)
+        setTimeout(() => {
+          animateCounter(counter, targetValue, 3000);
+        }, 150);
+      });
+      counterParentObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -30px 0px'
+});
+
+// Observe parent containers that have counters
+const counterContainers = document.querySelectorAll('[id*="port-health"], .port-stats-example');
+counterContainers.forEach(container => {
+  counterParentObserver.observe(container);
 });
 
 // Example using a placeholder array for demonstration
