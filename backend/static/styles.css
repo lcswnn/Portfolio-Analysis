@@ -166,6 +166,13 @@ ul li {
   animation-fill-mode: forwards;
 }
 
+.fadeInUp-button {
+  opacity: 0;
+  transform: translateY(190%);
+  animation: 1.4s fadeInUp2 forwards;
+  animation-delay: 0.5s;
+}
+
 .header h1 {
   font-size: 8rem;
   margin: 0;
@@ -318,14 +325,22 @@ p {
 
 .forms-container {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
   margin: 50px auto;
   max-width: 1600px;
   max-height: 800px;
-  padding-top: 20px;
+}
+
+.forms-container a {
+  text-decoration: none;
+  color: var(--white);
+  font-size: 1.4rem;
+  margin-top: 20px;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
 .log-in-container,
@@ -335,8 +350,8 @@ p {
   background-color: rgba(212, 212, 212, 0.3);
   border-radius: 2rem;
   flex: 1;
-  min-width: 400px;
-  max-width: 600px;
+  min-width: 800px;
+  max-width: 1200px;
 }
 
 .log-in-container h2,

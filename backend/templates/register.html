@@ -26,8 +26,24 @@
   </div>
 
   <div class="header">
-    <h1 id="secondary-header" class="fadeInUp-animation">Your Profile</h1>
+    <h1 id="secondary-header" class="fadeInUp-animation">Sign Up for Free</h1>
   </div>
+
+<div class="forms-container">
+  <div class="sign-up-container fadeInUp-animation">
+    <h2>Sign Up</h2>
+    <form action="{{ url_for('profile') }}" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit" id="button">Sign Up</button>
+    </form>
+  </div>
+  <a href="{{ url_for('login') }}" id="button" class="fadeInUp-button">Have an account? Log In</a>
+</div>
 
   <div class="footer">
     <p>© 2025 OptiFiance. All rights reserved.</p>

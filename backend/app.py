@@ -1,7 +1,5 @@
 #main Flask app for Web app
-import io
-from flask import Flask, render_template, Response
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from flask import Flask, render_template
 import analytics
 
 app = Flask(__name__)
@@ -12,11 +10,19 @@ def index():
     graph_html = analytics.create_animated_timeline_graph()
     return render_template('index.html', graph_html=graph_html)
 
-@app.route('/about.html')
+@app.route('/about')
 def about():
     return render_template('about.html')
 
-@app.route('/profile.html')
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+@app.route('/profile')
 def profile():
     return render_template('profile.html')
 
