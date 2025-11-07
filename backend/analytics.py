@@ -61,18 +61,18 @@ def create_animated_timeline_graph():
             'x': 0.5,
             'xanchor': 'center',
             'yanchor': 'top',
-            'font': dict(size=24, color='white', family='ClashDisplay'),
+            'font': dict(size=24, color='#F9F9F9', family='ClashDisplay'),
         },
         xaxis=dict(
-            title=dict(text='Date', font=dict(size=14, color='white', family='ClashDisplay')),
-            tickfont=dict(color='white'),
+            title=dict(text='Date', font=dict(size=14, color='#F9F9F9', family='ClashDisplay')),
+            tickfont=dict(color='#F9F9F9'),
             gridcolor='rgba(255, 255, 255, 0.1)',
             showgrid=True,
             range=[df['Date'].min(), df['Date'].max()]
         ),
         yaxis=dict(
-            title=dict(text='Portfolio Value ($)', font=dict(size=14, color='white', family='ClashDisplay')),
-            tickfont=dict(color='white', family='ClashDisplay'),
+            title=dict(text='Portfolio Value ($)', font=dict(size=14, color='#F9F9F9', family='ClashDisplay')),
+            tickfont=dict(color='#F9F9F9', family='ClashDisplay'),
             tickformat='$,.0f',
             gridcolor='rgba(255, 255, 255, 0.1)',
             showgrid=True,
@@ -80,7 +80,7 @@ def create_animated_timeline_graph():
         ),
         plot_bgcolor='rgba(0, 0, 0, 0)',
         paper_bgcolor='rgba(0, 0, 0, 0)',
-        font=dict(color='white', family='ClashDisplay'),
+        font=dict(color='#F9F9F9', family='ClashDisplay'),
         hovermode='x unified'
     )
 
