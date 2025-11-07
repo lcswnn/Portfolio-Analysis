@@ -194,7 +194,7 @@ ul li {
   display: inline-block;
   align-items: center;
   margin: 20px auto;
-  max-width: 50%;
+  max-width: 1200px;
   height: auto;
   border-radius: 10px;
   font-family: 'ClashDisplay', sans-serif;
@@ -231,7 +231,7 @@ ul li {
 }
 
 #content-section-left, #content-section-right {
-  max-width: 1250px;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 20px;
   border-radius: 15px;
@@ -331,7 +331,7 @@ p {
   gap: 10px;
   flex-wrap: wrap;
   margin: 50px auto;
-  max-width: 1600px;
+  max-width: 1200px;
   max-height: 800px;
 }
 
@@ -639,7 +639,7 @@ form input {
 }
 
 .profile-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 60px auto;
   padding: 30px;
   background-color: rgba(212, 212, 212, 0.3);
@@ -663,6 +663,20 @@ form input {
   color: var(--white);
   text-decoration: none;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+.portfolio-container,
+.optimize-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 30px;
+  background-color: rgba(212, 212, 212, 0.3);
+  border-radius: 15px;
+  animation: fadeInUp 1.5s ease-out;
+  animation-delay: 0.6s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  text-align: center;
 }
 
 .footer p{

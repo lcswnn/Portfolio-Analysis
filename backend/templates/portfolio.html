@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/styles.css">
+  <title>Portfolio Dashboard</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_io-2/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon_io-2/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon_io-2/favicon-16x16.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='favicon_io-2/site.webmanifest') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_io-2/favicon.ico') }}">
+</head>
+<body>
+
+  <div id="nav-bar">
+    <ul>
+      <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
+      <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
+      {% if current_user.is_authenticated %}
+        <li><a class="hover-underline" href="{{ url_for('portfolio') }}"> Portfolio </a></li>
+        <li><a class="hover-underline" href="{{ url_for('optimize') }}"> Optimization </a></li>
+        <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
+        <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
+      {% else %}
+        <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
+        <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <div class="header">
+    <h1 id="secondary-header" class="fadeInUp-animation">Portfolio Viewer</h1>
+  </div>
+
+  <div class="portfolio-container fadeInUp-animation">
+    <h2>THIS PAGE IS CURRENTLY UNDER CONSTRUCTION.</h2>
+    <p>Check back later for portfolio management tools to help you get the most out of your investments!</p>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 OptiFiance. All rights reserved.</p>
+  </div>
+
+  <script src="static/script.js"></script>
+
+</body>
+</html>

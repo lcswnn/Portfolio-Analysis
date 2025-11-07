@@ -116,12 +116,12 @@ def profile():
 @app.route('/portfolio')
 @login_required
 def portfolio():
-    return "Portfolio Page - Under Construction"
+    return render_template('portfolio.html')
 
 @app.route('/optimization')
 @login_required
 def optimize():
-    return "Optimization Page - Under Construction"
+    return render_template('optimize.html')
 
 if __name__ == '__main__':
     with app.app_context():
