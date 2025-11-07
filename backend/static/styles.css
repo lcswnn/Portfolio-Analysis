@@ -370,6 +370,34 @@ p {
   padding: 0 0 30px 0;
 }
 
+.sign-up-form {
+  align-items: stretch;
+}
+
+.form-columns {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  width: 100%;
+  padding: 0 30px;
+}
+
+.form-left,
+.form-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 300px;
+}
+
+.form-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 30px;
+}
+
 .log-in-container label,
 .sign-up-container label {
   color: var(--white);
@@ -402,28 +430,73 @@ p {
   font-family: 'ClashDisplay', sans-serif;
 }
 
-input[type="text"],
+input[name="firstname"],
 textarea {
   font-family: "ClashDisplay", sans-serif;
   font-size: 16px;
   color: var(--dark-grey);
   font-weight: normal;
+  padding: 15px 20px;
 }
 
-input[type="email"],
+input[name="lastname"],
 textarea {
   font-family: "ClashDisplay", sans-serif;
   font-size: 16px;
   color: var(--dark-grey);
   font-weight: normal;
+  padding: 15px 20px;
 }
 
-input[type="password"],
+input[name="email"],
 textarea {
   font-family: "ClashDisplay", sans-serif;
   font-size: 16px;
   color: var(--dark-grey);
   font-weight: normal;
+  padding: 15px 20px;
+}
+
+input[name="username"],
+textarea {
+  font-family: "ClashDisplay", sans-serif;
+  font-size: 16px;
+  color: var(--dark-grey);
+  font-weight: normal;
+  padding: 15px 20px;
+}
+
+input[name="password"],
+textarea {
+  font-family: "ClashDisplay", sans-serif;
+  font-size: 16px;
+  color: var(--dark-grey);
+  font-weight: normal;
+  padding: 15px 20px;
+}
+
+input[type="submit"] {
+  flex-shrink: 0;
+  background-color: rgba(212, 212, 212, 0.4);
+  padding: 15px 25px;
+  border-radius: 0.5rem;
+  transition: all 0.4s ease-out;
+  font-family: 'ClashDisplay', sans-serif;
+  font-size: 1.8rem;
+  color: var(--white);
+  text-decoration: none;
+  text-shadow: rgba(0,0,0,.01) 0 0;
+}
+
+form input { 
+  margin-top: 35px;
+}
+
+.log-in-container input[type="submit"]:hover,
+.sign-up-container input[type="submit"]:hover {
+  color: var(--dark-grey);
+  cursor: pointer;
+  background-color: rgb(41, 57, 73, 0.3);
 }
 
 .forms-container .or-separator {
@@ -563,6 +636,33 @@ textarea {
 
 .port-stats-container h3 {
   margin: 0;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 30px;
+  background-color: rgba(212, 212, 212, 0.3);
+  border-radius: 15px;
+  animation: fadeInUp 1.5s ease-out;
+  animation-delay: 0.6s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  text-align: center;
+}
+
+.profile-container h2 {
+  color: var(--white);
+  font-size: 2.4rem;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+  padding: 0 0 20px 0;
+}
+
+.profile-container a {
+  font-size: 1.8rem;
+  color: var(--white);
+  text-decoration: none;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
 .footer p{

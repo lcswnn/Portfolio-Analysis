@@ -17,11 +17,15 @@
     <ul>
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
-      <li><a class="hover-underline"> Portfolio </a></li>
-      <li><a class="hover-underline"> Optimization </a></li>
-      <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
-      <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
-      <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% if current_user.is_authenticated %}
+        <li><a class="hover-underline"> Portfolio </a></li>
+        <li><a class="hover-underline"> Optimization </a></li>
+        <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
+        <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
+      {% else %}
+        <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
+        <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% endif %}
     </ul>
   </div>
 
@@ -32,12 +36,11 @@
 <div class="forms-container">
   <div class="log-in-container fadeInUp-animation">
     <h2>Log In</h2>
-    <form action="{{ url_for('profile') }}" method="post">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-      <button type="submit" id="button">Log In</button>
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      {{ form.username }}
+      {{ form.password }}
+      {{ form.submit }}
     </form>
   </div>
   <a href="{{ url_for('register') }}" id="button" class="fadeInUp-button">Don't have an account? Sign Up</a>

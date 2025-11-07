@@ -17,11 +17,15 @@
     <ul>
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
-      <li><a class="hover-underline"> Portfolio </a></li>
-      <li><a class="hover-underline"> Optimization </a></li>
-      <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
-      <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
-      <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% if current_user.is_authenticated %}
+        <li><a class="hover-underline"> Portfolio </a></li>
+        <li><a class="hover-underline"> Optimization </a></li>
+        <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
+        <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
+      {% else %}
+        <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
+        <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% endif %}
     </ul>
   </div>
 

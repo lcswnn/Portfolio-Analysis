@@ -17,11 +17,15 @@
     <ul>
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
-      <li><a class="hover-underline"> Portfolio </a></li>
-      <li><a class="hover-underline"> Optimization </a></li>
-      <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
-      <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
-      <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% if current_user.is_authenticated %}
+        <li><a class="hover-underline"> Portfolio </a></li>
+        <li><a class="hover-underline"> Optimization </a></li>
+        <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
+        <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
+      {% else %}
+        <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
+        <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+      {% endif %}
     </ul>
   </div>
 
@@ -31,15 +35,58 @@
 
 <div class="forms-container">
   <div class="sign-up-container fadeInUp-animation">
-    <h2>Sign Up</h2>
-    <form action="{{ url_for('profile') }}" method="post">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-      <button type="submit" id="button">Sign Up</button>
+    <h2>Register</h2>
+    <form action="" method="post" class="sign-up-form">
+      {{ form.hidden_tag() }}
+      <div class="form-columns">
+        <div class="form-left">
+          {{ form.firstname }}
+          {% if form.firstname.errors %}
+            <ul class="errors">
+              {% for error in form.firstname.errors %}
+                <li style="color: red; font-size: 0.9rem;">{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {{ form.lastname }}
+          {% if form.lastname.errors %}
+            <ul class="errors">
+              {% for error in form.lastname.errors %}
+                <li style="color: red; font-size: 0.9rem;">{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {{ form.email }}
+          {% if form.email.errors %}
+            <ul class="errors">
+              {% for error in form.email.errors %}
+                <li style="color: red; font-size: 0.9rem;">{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        <div class="form-right">
+          {{ form.username }}
+          {% if form.username.errors %}
+            <ul class="errors">
+              {% for error in form.username.errors %}
+                <li style="color: red; font-size: 0.9rem;">{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {{ form.password }}
+          {% if form.password.errors %}
+            <ul class="errors">
+              {% for error in form.password.errors %}
+                <li style="color: red; font-size: 0.9rem;">{{ error }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+      <div class="form-button-wrapper">
+        {{ form.submit }}
+      </div>
     </form>
   </div>
   <a href="{{ url_for('login') }}" id="button" class="fadeInUp-button">Have an account? Log In</a>
