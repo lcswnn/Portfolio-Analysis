@@ -297,37 +297,54 @@ p {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
-.log-in-container {
+.forms-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 50px auto;
+  max-width: 1600px;
+  max-height: 800px;
+}
+
+.log-in-container,
+.sign-up-container {
   text-align: center;
   margin: 0 auto;
   background-color: rgba(212, 212, 212, 0.3);
-  max-width: 1100px;
   border-radius: 2rem;
-  margin: 7% auto;
+  flex: 1;
+  min-width: 400px;
+  max-width: 600px;
 }
 
-.log-in-container h2 {
+.log-in-container h2,
+.sign-up-container h2 {
   color: var(--white);
   font-size: 2.4rem;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
   padding: 25px 0 0 0;
 }
 
-.log-in-container form {
+.log-in-container form,
+.sign-up-container form {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 0 30px 0;
 }
 
-.log-in-container label {
+.log-in-container label,
+.sign-up-container label {
   color: var(--white);
   font-size: 1.8rem;
   margin: 15px 0 5px 0;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
-.log-in-container input {
+.log-in-container input,
+.sign-up-container input {
   padding: 10px;
   font-size: 1.6rem;
   border-radius: 0.5rem;
@@ -336,7 +353,8 @@ p {
   max-width: 400px;
 }
 
-.log-in-container button {
+.log-in-container button,
+.sign-up-container button {
   margin-top: 50px;
   padding: 12px 25px;
   font-size: 1.4rem;
@@ -373,11 +391,22 @@ textarea {
   font-weight: normal;
 }
 
+.forms-container .or-separator {
+  font-size: 1.5rem;
+  color: var(--white);
+  margin: 0 auto;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
 .footer p{
   text-align: center;
   padding: 15px 0;
   color: var(--white);
   font-size: 1rem;
-  margin-top: 40px;
+  margin-top: 100px;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }

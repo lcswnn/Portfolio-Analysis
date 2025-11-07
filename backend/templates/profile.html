@@ -23,17 +23,34 @@
     </ul>
   </div>
 
-<div class="log-in-container">
-  <h2 class="fadeInUp-animation">Sign Up</h2>
-  <form action="{{ url_for('profile') }}" method="post" class="fadeInUp-animation">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <button type="submit" id="button">Sign Up</button>
-  </form>
+<div class="forms-container">
+  <div class="log-in-container fadeInUp-animation">
+    <h2>Log In</h2>
+    <form action="{{ url_for('profile') }}" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit" id="button">Log In</button>
+    </form>
+  </div>
+
+  <div class="or-separator fadeInUp-animation">
+    <h2>OR</h2>
+  </div>
+
+  <div class="sign-up-container fadeInUp-animation">
+    <h2>Sign Up</h2>
+    <form action="{{ url_for('profile') }}" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit" id="button">Sign Up</button>
+    </form>
+  </div>
 </div>
 
   <div class="footer">
