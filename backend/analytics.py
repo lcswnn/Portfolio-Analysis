@@ -139,7 +139,7 @@ def create_animated_timeline_graph():
     """
 
     # Insert the animation script before the closing body tag
-    html = html.replace('</body>', animation_script + '</body>')
+    html = html.replace('</body>', f'{animation_script}</body>')
 
     return html
 
