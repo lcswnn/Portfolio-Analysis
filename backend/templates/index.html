@@ -17,8 +17,8 @@
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
       {% if current_user.is_authenticated %}
-        <li><a class="hover-underline"> Portfolio </a></li>
-        <li><a class="hover-underline"> Optimization </a></li>
+        <li><a class="hover-underline" href="{{ url_for('portfolio') }}"> Portfolio </a></li>
+        <li><a class="hover-underline" href="{{ url_for('optimize') }}"> Optimization </a></li>
         <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
         <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
       {% else %}
@@ -39,7 +39,11 @@
 
   <div class="content" id="content-section-right">
     <div id="button">
-      <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">Create an account.</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">Create an account.</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">Create an account.</a>
+      {% endif %}
     </div>
     <div id="words">
       <h3 class="fadeInUp-animation">Make it your own.</h3>
@@ -76,7 +80,11 @@
 
   <div class="content" id="content-section-right">
     <div id="button">
-      <a href="{{ url_for('about') }}" class="button fadeInUp-animation2">View your details.</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('portfolio') }}" class="button fadeInUp-animation2">View your portfolio.</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">View your portfolio.</a>
+      {% endif %}
     </div>
     <div id="words">
       <h3 class="fadeInUp-animation">Simple Viewing</h3>
@@ -96,7 +104,11 @@
       <p class="fadeInUp-animation">Get the most out of your investments. Let Machine Learning power your next moves. </p>
     </div>
     <div id="button">
-      <a href="{{ url_for('about') }}" class="button fadeInUp-animation2">Take control of your money.</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('optimize') }}" class="button fadeInUp-animation2">Take control of your investments.</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">Take control of your investments.</a>
+      {% endif %}
     </div>
   </div>
 

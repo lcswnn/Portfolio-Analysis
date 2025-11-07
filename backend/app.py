@@ -113,6 +113,16 @@ def register():
 def profile():
     return render_template('profile.html')
 
+@app.route('/portfolio')
+@login_required
+def portfolio():
+    return "Portfolio Page - Under Construction"
+
+@app.route('/optimization')
+@login_required
+def optimize():
+    return "Optimization Page - Under Construction"
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
