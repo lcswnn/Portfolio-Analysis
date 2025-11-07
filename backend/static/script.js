@@ -36,13 +36,26 @@ if (contentSections.length > 0) {
 }
 
 // Scroll-triggered animations for fadeInUp elements
-const animatedElements = document.querySelectorAll('.fadeInUp-animation, .fadeInUp-animation2');
+const animatedElements = document.querySelectorAll('.fadeInUp-animation, .fadeInUp-animation2, .fadeInUpLowOpacity2, .fadeInUpLowOpacity3, .fadeInUpLowOpacity4');
 
 const animationObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      // Add the 'visible' class to trigger animation
-      entry.target.classList.add('visible');
+      if (entry.target.classList.contains('fadeInUpLowOpacity2')) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 200); //0.2s delay
+      } else if (entry.target.classList.contains('fadeInUpLowOpacity3')) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 500); // 0.5s delay
+      } else if (entry.target.classList.contains('fadeInUpLowOpacity4')) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 900); // 0.9s delay
+      } else {
+        entry.target.classList.add('visible');
+      }
       // Stop observing after animation triggers once
       animationObserver.unobserve(entry.target);
     }
@@ -111,6 +124,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-
-// If you need to update the ticker periodically:
-// setInterval(updateTicker, 60000); // Update every minute (example)

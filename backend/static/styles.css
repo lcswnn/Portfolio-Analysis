@@ -135,6 +135,17 @@ ul li {
   }
 }
 
+@keyframes fadeInUpLowOpacity {
+  0% {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 0.4;
+  }
+}
+
 .fadeInUp-animation {
   opacity: 0;
   transform: translateY(60%);
@@ -235,11 +246,10 @@ ul li {
 
 #button {
   flex-shrink: 0;
-  background-color: rgba(212, 212, 212, 0.3);
+  background-color: rgba(212, 212, 212, 0.4);
   padding: 15px 25px;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   transition: all 0.4s ease-out;
-  border: 2px solid rgb(41, 57, 73, 0.4);
 }
 
 #button a {
@@ -400,6 +410,84 @@ textarea {
   align-items: center;
   justify-content: center;
   height: 400px;
+}
+
+.images {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 250px;
+  margin-top: 0px;
+}
+
+.images #table {
+  width: 140px;
+  height: auto;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.images #pie-chart {
+  width: 140px;
+  height: auto;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.images #bar-chart {
+  width: 140px;
+  height: auto;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.images #table.visible,
+.images #pie-chart.visible,
+.images #bar-chart.visible {
+  animation: 1.7s fadeInUpLowOpacity forwards;
+}
+
+@keyframes fadeInUpLowOpacity2 {
+  0% {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 0.4;
+  }
+}
+
+.fadeInUpLowOpacity2 {
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.fadeInUpLowOpacity2.visible {
+  animation: 1.4s fadeInUpLowOpacity2 forwards;
+}
+
+.fadeInUpLowOpacity3 {
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.fadeInUpLowOpacity3.visible {
+  animation: 1.4s fadeInUpLowOpacity3 forwards;
+  animation-delay: 0.5s;
+}
+
+.fadeInUpLowOpacity4 {
+  opacity: 0;
+  transform: translateY(60%);
+}
+
+.fadeInUpLowOpacity4.visible {
+  animation: 1.4s fadeInUpLowOpacity4 forwards;
+  animation-delay: 0.9s;
 }
 
 .footer p{

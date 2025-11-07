@@ -28,6 +28,7 @@
   <div class="graph-container">
     {{ graph_html|safe }}
   </div>
+
   <div class="content" id="content-section-left">
     <div id="words">
       <h3 class="fadeInUp-animation">Optimize with Confidence</h3>
@@ -54,7 +55,11 @@
     </div>
   </div>
 
-
+  <div class="images">
+    <img class="fadeInUpLowOpacity2" src="{{ url_for('static', filename='/images/table.png') }}" alt="White Table representing simple view" id="table">
+    <img class="fadeInUpLowOpacity3" src="{{ url_for('static', filename='images/pie-chart.png') }}" alt="White Pie Chart representing simple view" id="pie-chart">
+    <img class="fadeInUpLowOpacity4" src="{{ url_for('static', filename='images/bar-chart.png') }}" alt="White Bar Chart representing simple view" id="bar-chart">
+  </div>
 
   <div class="content" id="content-section-left">
     <div id="words">
@@ -70,7 +75,7 @@
 
   <div class="content" id="content-section-right">
     <div id="button">
-      <a href="{{ url_for('about') }}" class="button fadeInUp-animation2">Create an account.</a>
+      <a href="{{ url_for('profile') }}" class="button fadeInUp-animation2">Create an account.</a>
     </div>
     <div id="words">
       <h3 class="fadeInUp-animation">Make it your own.</h3>
