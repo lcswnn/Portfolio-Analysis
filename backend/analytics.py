@@ -68,7 +68,13 @@ def create_animated_timeline_graph():
             tickfont=dict(color='#F9F9F9'),
             gridcolor='rgba(255, 255, 255, 0.1)',
             showgrid=True,
-            range=[df['Date'].min(), df['Date'].max()]
+            range=[df['Date'].min(), df['Date'].max()],
+            showspikes=True,
+            spikemode='across',
+            spikesnap='data',
+            spikecolor='rgba(249, 249, 249, 0.4)',
+            spikethickness=1,
+            spikedash='dot'
         ),
         yaxis=dict(
             title=dict(text='Portfolio Value ($)', font=dict(size=14, color='#F9F9F9', family='ClashDisplay')),
@@ -85,7 +91,11 @@ def create_animated_timeline_graph():
     )
 
     # Convert to HTML with custom JavaScript for smooth animation
-    html = fig.to_html(include_plotlyjs='cdn', div_id='animated-timeline')
+    html = fig.to_html(
+        include_plotlyjs='cdn',
+        div_id='animated-timeline',
+        config={'displayModeBar': False}
+    )
 
     # Add custom JavaScript for smooth SVG path animation
     animation_script = """
@@ -93,17 +103,17 @@ def create_animated_timeline_graph():
         #animated-timeline .scatterlayer path.js-line {
             stroke-dasharray: 3000;
             stroke-dashoffset: 3000;
-            animation: dash 6.6s ease-in-out forwards;
+            animation: dash 6s ease-in-out forwards;
         }
 
         #animated-timeline .scatterlayer path.js-fill {
             opacity: 0;
-            animation: fillFade 4.7s ease-in-out forwards;
+            animation: fillFade 3s ease-in-out forwards;
         }
 
         #animated-timeline .scatterlayer .point {
             opacity: 0;
-            animation: pointFade 5s ease-in-out forwards;
+            animation: pointFade 3s ease-in-out forwards;
         }
 
         @keyframes dash {

@@ -7,6 +7,7 @@
   <title>Portfolio Dashboard</title>
 </head>
 <body>
+
   <div id="nav-bar">
     <ul>
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
@@ -16,25 +17,19 @@
       <li><a class="hover-underline"> Profile </a></li>
     </ul>
   </div>
+
   <div class="header">
-    <h1 class="fadeInUp-animation">WealthLens</h1>
-    <h2 class="fadeInUp-animation2">View, Analyze, and Optimize Your Investments</h2>
+    <h1 class="fadeInUp-animation">About WealthLens</h1>
+    <h2 class="fadeInUp-animation2">How it all comes together</h2>
   </div>
-  <div class="graph-container">
-    {{ graph_html|safe }}
-  </div>
-  <div class="content" id="content-section">
-    <div id="words">
-      <h3 class="fadeInUp-animation">Optimize with Confidence</h3>
-      <p class="fadeInUp-animation">WealthLens uses Machine Learning to optimize your financial portfolio. Learn what's powers WealthLens.</p>
-    </div>
-    <div id="button">
-      <a href="{{ url_for('about') }}" class="button fadeInUp-animation2">Look under the hood.</a>
-    </div>
-  </div>
+
+
+
   <div class="footer">
     <p>© 2025 WealthLens. All rights reserved.</p>
   </div>
+
   <script src="static/script.js"></script>
+
 </body>
 </html>

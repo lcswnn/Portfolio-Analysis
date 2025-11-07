@@ -12,5 +12,9 @@ def index():
     graph_html = analytics.create_animated_timeline_graph()
     return render_template('index.html', graph_html=graph_html)
 
+@app.route('/about.html')
+def about():
+    return render_template('about.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
