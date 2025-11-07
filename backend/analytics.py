@@ -46,10 +46,10 @@ def create_animated_timeline_graph():
         x=df['Date'],
         y=df['portfolio_value'],
         mode='lines+markers',
-        line=dict(color='#00D9FF', width=3, shape='spline', smoothing=1.3),
-        marker=dict(size=8, color='#00D9FF'),
+        line=dict(color='#293949', width=3, shape='spline', smoothing=1.3),
+        marker=dict(size=8, color='#293949'),
         fill='tozeroy',
-        fillcolor='rgba(0, 217, 255, 0.1)',
+        fillcolor='rgba(41, 57, 73, 0.1)',
         name='Portfolio Value'
     ))
 
@@ -90,31 +90,20 @@ def create_animated_timeline_graph():
     # Add custom JavaScript for smooth SVG path animation
     animation_script = """
     <style>
-        /* Initial state - hidden */
         #animated-timeline .scatterlayer path.js-line {
             stroke-dasharray: 3000;
             stroke-dashoffset: 3000;
+            animation: dash 6.6s ease-in-out forwards;
         }
 
         #animated-timeline .scatterlayer path.js-fill {
             opacity: 0;
+            animation: fillFade 4.7s ease-in-out forwards;
         }
 
         #animated-timeline .scatterlayer .point {
             opacity: 0;
-        }
-
-        /* Animation classes - added when graph is visible */
-        #animated-timeline.animate .scatterlayer path.js-line {
-            animation: dash 4.5s ease-in-out forwards;
-        }
-
-        #animated-timeline.animate .scatterlayer path.js-fill {
-            animation: fillFade 4.5s ease-in-out forwards;
-        }
-
-        #animated-timeline.animate .scatterlayer .point {
-            animation: pointFade 4.5s ease-in-out forwards;
+            animation: pointFade 5s ease-in-out forwards;
         }
 
         @keyframes dash {
@@ -147,41 +136,6 @@ def create_animated_timeline_graph():
             }
         }
     </style>
-
-    <script>
-        // Wait for Plotly to finish rendering, then observe for visibility
-        document.addEventListener('DOMContentLoaded', function() {
-            const graphDiv = document.getElementById('animated-timeline');
-
-            // Wait for Plotly to fully render the graph
-            if (graphDiv) {
-                // Use MutationObserver to detect when Plotly finishes rendering
-                const observer = new MutationObserver(function(mutations) {
-                    const svgElement = graphDiv.querySelector('svg.main-svg');
-                    if (svgElement) {
-                        observer.disconnect();
-
-                        // Now set up intersection observer to trigger animation when visible
-                        const intersectionObserver = new IntersectionObserver(function(entries) {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting && !graphDiv.classList.contains('animate')) {
-                                    // Small delay to ensure smooth start
-                                    setTimeout(() => {
-                                        graphDiv.classList.add('animate');
-                                    }, 200);
-                                    intersectionObserver.disconnect();
-                                }
-                            });
-                        }, { threshold: 0.3 }); // Trigger when 30% of graph is visible
-
-                        intersectionObserver.observe(graphDiv);
-                    }
-                });
-
-                observer.observe(graphDiv, { childList: true, subtree: true });
-            }
-        });
-    </script>
     """
 
     # Insert the animation script before the closing body tag
