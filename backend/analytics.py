@@ -16,7 +16,7 @@ def get_portfolio_timeline_data():
     # Query to get account total for each date
     query = """
     SELECT Date,
-           REPLACE(REPLACE("Mkt Val (Market Value)", '$', ''), ',', '') as portfolio_value
+           REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') as portfolio_value
     FROM positions
     WHERE Symbol = 'Account Total'
     ORDER BY Date

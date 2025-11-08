@@ -667,6 +667,22 @@ form input {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
+#drop-zone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 20px;
+}
+#drop-zone.hover {
+    border-color: #333;
+    background-color: #f0f0f0;
+}
+.file-item {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
 /** End Profile page styles */
 
 .portfolio-container,
