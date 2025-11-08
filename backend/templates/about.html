@@ -31,10 +31,197 @@
 
   <div class="header">
     <h1 id="secondary-header" class="fadeInUp-animation">About OptiFinance</h1>
-    <h2 class="fadeInUp-animation2">How it all comes together</h2>
+    <h2 class="fadeInUp-animation2">Intelligent Portfolio Optimization Using Machine Learning</h2>
   </div>
 
+  <div class="about-container">
 
+    <!-- What is OptiFinance Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">What is OptiFinance?</h2>
+      <p>OptiFinance is an intelligent portfolio analysis and optimization platform powered by advanced machine learning algorithms. We help investors make data-driven decisions by analyzing your portfolio and providing actionable trading recommendations.</p>
+      <p>Our system evaluates your stocks and provides three key insights: <strong>Risk Assessment</strong>, <strong>Portfolio Health</strong>, and <strong>Trading Recommendations</strong> (Buy, Hold, or Sell signals).</p>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">Key Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3 class="feature-title">Risk Analysis</h3>
+          <p>Comprehensive risk assessment of individual stocks and your entire portfolio using volatility analysis, correlation metrics, and drawdown calculations.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Portfolio Health Score</h3>
+          <p>Get a holistic health score that considers diversification, sector exposure, concentration risk, and overall portfolio balance.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Trading Signals</h3>
+          <p>Receive intelligent Buy, Hold, or Sell recommendations for each position based on technical analysis and ML-driven price prediction models.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps-container">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Data Collection</h3>
+          <p>Upload your portfolio holdings and we fetch historical price data and financial metrics for each stock.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Feature Engineering</h3>
+          <p>Extract technical indicators (RSI, MACD, Bollinger Bands), fundamental metrics, and temporal features from the data.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>ML Analysis</h3>
+          <p>Our models analyze patterns and calculate risk scores, health metrics, and price trend predictions.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>Recommendations</h3>
+          <p>Receive clear Buy, Hold, or Sell signals with confidence scores for each stock in your portfolio.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Machine Learning Approach Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">Our Machine Learning Approach</h2>
+      <p>OptiFinance uses a combination of supervised and unsupervised machine learning techniques to deliver insights:</p>
+
+      <div class="ml-approach-grid">
+        <div class="ml-card">
+          <h3>Risk Scoring Model</h3>
+          <p><strong>Type:</strong> Regression + Ensemble Methods</p>
+          <p>We train models on historical volatility, beta, drawdown, and correlation data to predict forward-looking risk scores (0-100 scale).</p>
+          <p><strong>Techniques:</strong> Random Forest, Gradient Boosting, Linear Regression</p>
+        </div>
+
+        <div class="ml-card">
+          <h3>Portfolio Health Index</h3>
+          <p><strong>Type:</strong> Multi-factor Scoring System</p>
+          <p>Combines Sharpe ratio, diversification index, sector balance, and concentration metrics into a comprehensive health score.</p>
+          <p><strong>Techniques:</strong> Weighted Feature Combination, Normalization, Anomaly Detection</p>
+        </div>
+
+        <div class="ml-card">
+          <h3>Trading Signal Generation</h3>
+          <p><strong>Type:</strong> Classification Model (3-class)</p>
+          <p>Predicts trading actions (Buy/Hold/Sell) using technical indicators and trend forecasting.</p>
+          <p><strong>Techniques:</strong> XGBoost, LSTM Neural Networks, Support Vector Machines</p>
+        </div>
+
+        <div class="ml-card">
+          <h3>Price Prediction</h3>
+          <p><strong>Type:</strong> Time Series Forecasting</p>
+          <p>Forecasts short-term price movements to support trading recommendations.</p>
+          <p><strong>Techniques:</strong> ARIMA, LSTM RNNs, Prophet (Facebook's forecasting library)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Implementation Roadmap Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">Implementation Roadmap</h2>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 1: Data & Feature Engineering</h3>
+        <ul class="implementation-list">
+          <li>Set up data pipeline to fetch historical OHLCV (Open, High, Low, Close, Volume) data</li>
+          <li>Calculate technical indicators: RSI, MACD, Bollinger Bands, ATR, Moving Averages</li>
+          <li>Extract fundamental metrics: P/E ratio, market cap, dividend yield</li>
+          <li>Normalize and scale features for model input</li>
+          <li>Handle missing data and outliers</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 2: Risk Model Development</h3>
+        <ul class="implementation-list">
+          <li>Collect historical returns data (1-5 years minimum)</li>
+          <li>Calculate volatility, beta, Value at Risk (VaR), and maximum drawdown</li>
+          <li>Train regression model to predict risk scores</li>
+          <li>Use Random Forest/Gradient Boosting for non-linear relationships</li>
+          <li>Validate using backtesting and correlation analysis</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 3: Portfolio Health Scoring</h3>
+        <ul class="implementation-list">
+          <li>Calculate correlation matrix between stocks to assess diversification</li>
+          <li>Compute Herfindahl index for concentration risk</li>
+          <li>Analyze sector/industry exposure balance</li>
+          <li>Build composite health score combining multiple factors with weighted averaging</li>
+          <li>Flag unhealthy patterns (over-concentration, high correlation)</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 4: Trading Signal Model</h3>
+        <ul class="implementation-list">
+          <li>Create labeled training data with historical Buy/Hold/Sell signals</li>
+          <li>Engineer features: momentum indicators, trend strength, volatility regime</li>
+          <li>Train multi-class classifier using XGBoost or neural networks</li>
+          <li>Calculate confidence scores (probability estimates) for each signal</li>
+          <li>Validate with walk-forward testing on historical data</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 5: Time Series Forecasting</h3>
+        <ul class="implementation-list">
+          <li>Build LSTM neural network for 30-90 day price predictions</li>
+          <li>Use ensemble approach combining multiple forecasting methods</li>
+          <li>Implement confidence intervals for predictions</li>
+          <li>Validate forecasts using MAE, RMSE, and directional accuracy</li>
+          <li>Feed predictions into trading signal model</li>
+        </ul>
+      </div>
+
+      <div class="roadmap-phase">
+        <h3 class="phase-title">Phase 6: Integration & Deployment</h3>
+        <ul class="implementation-list">
+          <li>Create unified API to serve all models</li>
+          <li>Implement real-time prediction pipeline</li>
+          <li>Build dashboard to display risk, health, and trading signals</li>
+          <li>Set up continuous retraining with new data</li>
+          <li>Monitor model performance and drift detection</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="about-section fadeInUp-animation">
+      <h2 class="section-title">Technology Stack</h2>
+      <div class="tech-stack-grid">
+        <div class="tech-item">
+          <strong>Data Processing:</strong> Pandas, NumPy, Polars
+        </div>
+        <div class="tech-item">
+          <strong>ML Frameworks:</strong> Scikit-learn, XGBoost, TensorFlow/Keras, PyTorch
+        </div>
+        <div class="tech-item">
+          <strong>Time Series:</strong> LSTM, Prophet, Statsmodels
+        </div>
+        <div class="tech-item">
+          <strong>Data Source:</strong> Yahoo Finance, Alpha Vantage, IEX Cloud
+        </div>
+        <div class="tech-item">
+          <strong>Backtesting:</strong> Backtrader, Zipline
+        </div>
+        <div class="tech-item">
+          <strong>Deployment:</strong> Docker, Flask/FastAPI, Redis for caching
+        </div>
+      </div>
+    </section>
+
+  </div>
 
   <div class="footer">
     <p>© 2025 OptiFinance. All rights reserved.</p>
