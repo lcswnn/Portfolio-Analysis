@@ -161,7 +161,7 @@ ul li {
 }
 
 .fadeInUp-animation2.visible {
-  animation: 1.4s fadeInUp2;
+  animation: 1.5s fadeInUp2;
   animation-delay: 0.5s;
   animation-fill-mode: forwards;
 }
@@ -171,6 +171,15 @@ ul li {
   transform: translateY(190%);
   animation: 1.4s fadeInUp2 forwards;
   animation-delay: 0.5s;
+}
+
+.roadmap-early-trigger {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.roadmap-early-trigger.visible {
+  animation: 1.7s fadeInUp forwards;
 }
 
 .header h1 {
@@ -194,7 +203,7 @@ ul li {
   display: inline-block;
   align-items: center;
   margin: 20px auto;
-  max-width: 1200px;
+  max-width: 1400px;
   height: auto;
   border-radius: 10px;
   font-family: 'ClashDisplay', sans-serif;
@@ -202,7 +211,7 @@ ul li {
 }
 
 .graph-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 60px auto;
   padding: 30px;
   background-color: rgba(212, 212, 212, 0.3);
@@ -231,7 +240,7 @@ ul li {
 }
 
 #content-section-left, #content-section-right {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 40px auto;
   padding: 20px;
   border-radius: 15px;
@@ -331,7 +340,7 @@ p {
   gap: 10px;
   flex-wrap: wrap;
   margin: 50px auto;
-  max-width: 1200px;
+  max-width: 1400px;
   max-height: 800px;
 }
 
@@ -351,7 +360,7 @@ p {
   border-radius: 2rem;
   flex: 1;
   min-width: 800px;
-  max-width: 1200px;
+  max-width: 1400px;
 }
 
 .log-in-container h2,
@@ -614,7 +623,7 @@ form input {
   align-items: center;
   text-align: center;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   gap: 100px;
   margin: 0 auto;
 }
@@ -641,7 +650,7 @@ form input {
 
 /** Profile Page Styles */
 .profile-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 60px auto;
   padding: 30px;
   background-color: rgba(212, 212, 212, 0.3);
@@ -667,11 +676,27 @@ form input {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
+#drop-zone {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 20px;
+}
+#drop-zone.hover {
+    border-color: #333;
+    background-color: #f0f0f0;
+}
+.file-item {
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
 /** End Profile page styles */
 
 .portfolio-container,
 .optimize-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 60px auto;
   padding: 30px;
   background-color: rgba(212, 212, 212, 0.3);
@@ -694,7 +719,7 @@ form input {
 
 /* About Page Styles */
 .about-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
 }
@@ -709,7 +734,6 @@ form input {
 
 .about-section:hover {
   background-color: rgba(212, 212, 212, 0.3);
-  transform: translateX(10px);
 }
 
 .section-title {

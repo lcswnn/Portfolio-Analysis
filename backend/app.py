@@ -1,17 +1,33 @@
 #main Flask app for Web app
-from flask import Flask, redirect, render_template, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, redirect, render_template, url_for, request, jsonify
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 import analytics
 from flask_bcrypt import Bcrypt
+import os
+import pandas as pd
+import re
+from io import StringIO
+from models import db, Position
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/account-info.db'
+
+# Use account-info.db for user authentication
+account_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/account-info.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = account_db_uri
+app.config['SQLALCHEMY_BINDS'] = {
+    'positions': 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/positions.db'
+}
 app.config['SECRET_KEY'] = 'secretkey'
-db = SQLAlchemy(app)
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+db.init_app(app)
 Bcrypt = Bcrypt(app)
 
 login_manager = LoginManager()
@@ -108,10 +124,87 @@ def register():
     
     return render_template('register.html', form=form)
 
+def extract_date_from_csv(content):
+    """Extract date from first line of CSV file"""
+    if lines := content.split('\n'):
+        first_line = lines[0]
+        if date_match := re.search(r'(\d{1,2}/\d{1,2}/\d{4})', first_line):
+            return date_match[1]
+    return "Unknown"
+
+def process_csv_and_save_to_db(file_content):
+    """Process CSV file and save to database"""
+    try:
+        # Extract date from first line
+        date_str = extract_date_from_csv(file_content)
+
+        # Read CSV, skipping first 3 rows
+        df = pd.read_csv(StringIO(file_content), skiprows=3)
+
+        # Drop the last column if it exists
+        if len(df.columns) > 0:
+            df = df.iloc[:, :-1]
+
+        # Add date column
+        df['Date'] = date_str
+
+        # Map dataframe columns to Position model columns
+        column_mapping = {
+            'Symbol': 'Symbol',
+            'Description': 'Description',
+            'Qty (Quantity)': 'Qty_Quantity',
+            'Price': 'Price',
+            'Price Chng $ (Price Change $)': 'Price_Chng_Dollar',
+            'Price Chng % (Price Change %)': 'Price_Chng_Percent',
+            'Mkt Val (Market Value)': 'Mkt_Val',
+            'Day Chng $ (Day Change $)': 'Day_Chng_Dollar',
+            'Day Chng % (Day Change %)': 'Day_Chng_Percent',
+            'Cost Basis': 'Cost_Basis',
+            'Gain $ (Gain/Loss $)': 'Gain_Dollar',
+            'Gain % (Gain/Loss %)': 'Gain_Percent',
+            'Reinvest?': 'Reinvest',
+            'Reinvest Capital Gains?': 'Reinvest_Capital_Gains',
+            'Security Type': 'Security_Type',
+            'Date': 'Date'
+        }
+
+        # Insert rows into database
+        for _, row in df.iterrows():
+            position = Position()
+            for csv_col, db_col in column_mapping.items():
+                if csv_col in row.index:
+                    setattr(position, db_col, str(row[csv_col]))
+            db.session.add(position)
+
+        db.session.commit()
+        return True, f"Successfully added {len(df)} positions from {date_str}"
+    except Exception as e:
+        db.session.rollback()
+        return False, f"Error processing file: {str(e)}"
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('profile.html')
+    if request.method != 'POST':
+        graph_html = analytics.create_animated_timeline_graph()
+        return render_template('profile.html', graph_html=graph_html)
+    if 'file' not in request.files:
+        return jsonify({'success': False, 'message': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'No selected file'}), 400
+    if file and file.filename.endswith('.csv'):
+        try:
+            # Read file content as string
+            file_content = file.read().decode('utf-8')
+            success, message = process_csv_and_save_to_db(file_content)
+            if success:
+                return jsonify({'success': True, 'message': message})
+            else:
+                return jsonify({'success': False, 'message': message}), 400
+        except Exception as e:
+            return jsonify({'success': False, 'message': f'Error uploading file: {str(e)}'}), 500
+    return jsonify({'success': False, 'message': 'Please upload a CSV file'}), 400
 
 @app.route('/portfolio')
 @login_required

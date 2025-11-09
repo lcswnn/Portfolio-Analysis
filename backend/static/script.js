@@ -23,7 +23,7 @@ if (contentSections.length > 0) {
       }
     });
   }, {
-    threshold: 0.12, // Trigger when 20% of the element is visible
+    threshold: 0.12, // Trigger when 12% of the element is visible
     rootMargin: '0px 0px -50px 0px' // Start slightly before it comes into view
   });
 
@@ -61,13 +61,32 @@ const animationObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.0, // Trigger when 10% of the element is visible
+  threshold: 0.1, // Trigger when 10% of the element is visible
   rootMargin: '0px 0px -30px 0px' // Start animation slightly before element comes into view
 });
 
 // Observe all animated elements
 animatedElements.forEach(element => {
   animationObserver.observe(element);
+});
+
+// Early trigger observer for roadmap - triggers much sooner with positive rootMargin
+const roadmapEarlyTrigger = document.querySelectorAll('.roadmap-early-trigger');
+const earlyTriggerObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      earlyTriggerObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.0,
+  rootMargin: '200px 0px 0px 0px' // Trigger when element is 200px below the viewport
+});
+
+// Observe roadmap elements
+roadmapEarlyTrigger.forEach(element => {
+  earlyTriggerObserver.observe(element);
 });
 
 // Counter animation for the portfolio health number using JavaScript
@@ -112,7 +131,7 @@ const counterParentObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.1,
+  threshold: 0.0,
   rootMargin: '0px 0px -30px 0px'
 });
 
@@ -176,3 +195,73 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const fileList = document.getElementById('file-list');
+
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false); // For global prevention
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+// Highlight drop zone on dragenter/dragover
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.add('hover'), false);
+});
+
+// Remove highlight on dragleave/drop
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.remove('hover'), false);
+});
+
+// Handle dropped files
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const {files} = dt;
+    handleFiles(files);
+}
+
+// Handle file input selection
+dropZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(files) {
+    for (const file of files) {
+        uploadFile(file);
+    }
+}
+
+function uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/profile', { // Flask upload endpoint
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const listItem = document.createElement('div');
+            listItem.classList.add('file-item');
+            listItem.textContent = `Uploaded: ${file.name}`;
+            fileList.appendChild(listItem);
+        } else {
+            alert(`Error uploading ${file.name}: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(`Failed to upload ${file.name}`);
+    });
+}

@@ -36,7 +36,16 @@
   <div class="profile-container fadeInUp-animation">
     <h2>Welcome, {{ current_user.firstname }} {{ current_user.lastname}}!</h2>
     <p>This is your profile page. Here you can manage your account and view your portfolio.</p>
+    <div id="drop-zone">
+      Drag and drop files here or click to select
+      <input type="file" id="file-input" multiple style="display: none;">
+  </div>
+  <div id="file-list"></div>
     <a href="{{url_for('logout')}}" id="button" class="fadeInUp-button">Log Out</a>
+  </div>
+
+  <div class="graph-container">
+    {{ graph_html|safe }}
   </div>
   
 
