@@ -8,7 +8,7 @@ import sqlite3
 import re
 
 # load data into sqlite3 database
-connection = sqlite3.connect('/Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/positions.db')
+connection = sqlite3.connect('/Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/dummy_positions.db')
 
 # Function to extract date and load CSV
 def load_csv_with_date(file_path):

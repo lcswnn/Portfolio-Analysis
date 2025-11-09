@@ -77,7 +77,7 @@ class LogInForm(FlaskForm):
 @app.route('/')
 def index():
     # Generate the animated timeline graph
-    graph_html = analytics.create_animated_timeline_graph()
+    graph_html = analytics.create_DUMMY_animated_timeline_graph()
     return render_template('index.html', graph_html=graph_html)
 
 @app.route('/about')
