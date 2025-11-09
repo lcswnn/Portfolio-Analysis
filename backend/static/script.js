@@ -23,7 +23,7 @@ if (contentSections.length > 0) {
       }
     });
   }, {
-    threshold: 0.12, // Trigger when 20% of the element is visible
+    threshold: 0.12, // Trigger when 12% of the element is visible
     rootMargin: '0px 0px -50px 0px' // Start slightly before it comes into view
   });
 
@@ -61,13 +61,32 @@ const animationObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.0, // Trigger when 10% of the element is visible
+  threshold: 0.1, // Trigger when 10% of the element is visible
   rootMargin: '0px 0px -30px 0px' // Start animation slightly before element comes into view
 });
 
 // Observe all animated elements
 animatedElements.forEach(element => {
   animationObserver.observe(element);
+});
+
+// Early trigger observer for roadmap - triggers much sooner with positive rootMargin
+const roadmapEarlyTrigger = document.querySelectorAll('.roadmap-early-trigger');
+const earlyTriggerObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      earlyTriggerObserver.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.0,
+  rootMargin: '200px 0px 0px 0px' // Trigger when element is 200px below the viewport
+});
+
+// Observe roadmap elements
+roadmapEarlyTrigger.forEach(element => {
+  earlyTriggerObserver.observe(element);
 });
 
 // Counter animation for the portfolio health number using JavaScript
@@ -112,7 +131,7 @@ const counterParentObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.1,
+  threshold: 0.0,
   rootMargin: '0px 0px -30px 0px'
 });
 
