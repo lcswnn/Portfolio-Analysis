@@ -256,6 +256,10 @@ function uploadFile(file) {
             listItem.classList.add('file-item');
             listItem.textContent = `Uploaded: ${file.name}`;
             fileList.appendChild(listItem);
+            // Reload the page to refresh the graph with new data
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         } else {
             alert(`Error uploading ${file.name}: ${data.message}`);
         }
