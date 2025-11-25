@@ -269,3 +269,42 @@ function uploadFile(file) {
         alert(`Failed to upload ${file.name}`);
     });
 }
+
+// Handle delete file button clicks
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-file-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const fileId = this.getAttribute('data-file-id');
+            if (confirm('Are you sure you want to delete this file?')) {
+                deleteFile(fileId, this);
+            }
+        });
+    });
+});
+
+function deleteFile(fileId, buttonElement) {
+    fetch(`/delete-file/${fileId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the list item from the DOM
+            const listItem = buttonElement.closest('li');
+            listItem.style.opacity = '0';
+            listItem.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                listItem.remove();
+            }, 300);
+            alert('File deleted successfully');
+        } else {
+            alert(`Error deleting file: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to delete file');
+    });
+}

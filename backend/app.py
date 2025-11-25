@@ -10,8 +10,9 @@ import os
 import pandas as pd
 import re
 from io import StringIO
-from models import db, Position
+from models import db, Position, UploadedFile
 import time
+from datetime import datetime
 
 app = Flask(__name__)
 # Store the app startup time to invalidate old sessions
@@ -90,9 +91,7 @@ class LogInForm(FlaskForm):
 
 @app.route('/')
 def index():
-    # Generate the animated timeline graph
-    graph_html = analytics.create_DUMMY_animated_timeline_graph()
-    return render_template('index.html', graph_html=graph_html)
+    return render_template('index.html')
 
 @app.route('/about')
 def about():
@@ -142,25 +141,42 @@ def register():
     return render_template('register.html', form=form)
 
 def extract_date_from_csv(content):
-    """Extract date from first line of CSV file"""
+    """Extract date from first line of CSV file, or use today's date if not found"""
     if lines := content.split('\n'):
         first_line = lines[0]
+
+        # Try YYYY/MM/DD format first (2025/11/25)
+        if date_match := re.search(r'(\d{4})/(\d{1,2})/(\d{1,2})', first_line):
+            year, month, day = date_match.groups()
+            return f'{month}/{day}/{year}'
+
+        # Try MM/DD/YYYY format (11/25/2025)
         if date_match := re.search(r'(\d{1,2}/\d{1,2}/\d{4})', first_line):
             return date_match[1]
-    return "Unknown"
 
-def process_csv_and_save_to_db(file_content):
-    """Process CSV file and save to database"""
+    # If no date found, use today's date in MM/DD/YYYY format
+    today = datetime.now()
+    return today.strftime('%m/%d/%Y')
+
+def process_csv_and_save_to_db(file_content, user_id, filename):
+    """Process CSV file and save to database, associated with the given user"""
     try:
         # Extract date from first line
         date_str = extract_date_from_csv(file_content)
 
-        # Read CSV, skipping first 3 rows
-        df = pd.read_csv(StringIO(file_content), skiprows=3)
+        # Read CSV, skipping first 2 rows (title and blank line)
+        # Row 3 contains the headers
+        df = pd.read_csv(StringIO(file_content), skiprows=2)
 
-        # Drop the last column if it exists
-        if len(df.columns) > 0:
+        # Remove empty columns (often added by CSV format with trailing commas)
+        df = df.dropna(axis=1, how='all')
+
+        # Drop the last column if it's empty or unnamed
+        if len(df.columns) > 0 and (df.columns[-1] == '' or pd.isna(df.columns[-1]) or 'Unnamed' in str(df.columns[-1])):
             df = df.iloc[:, :-1]
+
+        # Strip whitespace from column names in case there are any
+        df.columns = df.columns.str.strip()
 
         # Add date column
         df['Date'] = date_str
@@ -185,27 +201,49 @@ def process_csv_and_save_to_db(file_content):
             'Date': 'Date'
         }
 
-        # Insert rows into database
+        # Insert rows into database, associating each position with the user
+        position_count = 0
         for _, row in df.iterrows():
             position = Position()
+            position.user_id = user_id  # Link position to the current user
             for csv_col, db_col in column_mapping.items():
                 if csv_col in row.index:
-                    setattr(position, db_col, str(row[csv_col]))
+                    # Convert NaN/None to None for proper NULL storage
+                    value = row[csv_col]
+                    if pd.isna(value):
+                        value = None
+                    else:
+                        value = str(value).strip()
+                    setattr(position, db_col, value)
             db.session.add(position)
+            position_count += 1
 
         db.session.commit()
-        return True, f"Successfully added {len(df)} positions from {date_str}"
+
+        # Record the file upload in the uploaded_files table
+        uploaded_file = UploadedFile(
+            user_id=user_id,
+            filename=filename,
+            position_count=position_count
+        )
+        db.session.add(uploaded_file)
+        db.session.commit()
+
+        return True, f"Successfully added {position_count} positions from {date_str}", position_count
     except Exception as e:
         db.session.rollback()
-        return False, f"Error processing file: {str(e)}"
+        return False, f"Error processing file: {str(e)}", 0
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     if request.method != 'POST':
-        graph_html = analytics.create_animated_timeline_graph()
-        holdings_graph_html = analytics.create_holdings_by_type_graph()
-        return render_template('profile.html', graph_html=graph_html, holdings_graph_html=holdings_graph_html)
+        # Fetch user's 5 most recently uploaded files
+        uploaded_files = UploadedFile.query.filter_by(user_id=current_user.id).order_by(UploadedFile.upload_date.desc()).limit(5).all()
+
+        graph_html = analytics.create_animated_timeline_graph(current_user.id)
+        holdings_graph_html = analytics.create_holdings_by_type_graph(current_user.id)
+        return render_template('profile.html', graph_html=graph_html, holdings_graph_html=holdings_graph_html, files=uploaded_files)
     if 'file' not in request.files:
         return jsonify({'success': False, 'message': 'No file part'}), 400
     file = request.files['file']
@@ -215,7 +253,7 @@ def profile():
         try:
             # Read file content as string
             file_content = file.read().decode('utf-8')
-            success, message = process_csv_and_save_to_db(file_content)
+            success, message, position_count = process_csv_and_save_to_db(file_content, current_user.id, file.filename)
             if success:
                 return jsonify({'success': True, 'message': message})
             else:
@@ -233,6 +271,37 @@ def portfolio():
 @login_required
 def optimize():
     return render_template('optimize.html')
+
+@app.route('/delete-file/<int:file_id>', methods=['DELETE'])
+@login_required
+def delete_file(file_id):
+    """Delete an uploaded file and all associated positions"""
+    try:
+        # Find the file to delete
+        uploaded_file = UploadedFile.query.get(file_id)
+
+        if not uploaded_file:
+            return jsonify({'success': False, 'message': 'File not found'}), 404
+
+        # Verify the file belongs to the current user (security check)
+        if uploaded_file.user_id != current_user.id:
+            return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+        # Delete all positions associated with this file
+        # We can identify them by filename and user_id (positions from this upload)
+        Position.query.filter_by(
+            user_id=current_user.id,
+            Date=uploaded_file.upload_date.strftime('%m/%d/%Y')
+        ).delete()
+
+        # Delete the file record
+        db.session.delete(uploaded_file)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'File deleted successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Error deleting file: {str(e)}'}), 500
 
 if __name__ == '__main__':
     with app.app_context():

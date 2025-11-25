@@ -9,25 +9,45 @@ import sqlite3
 #set Plotly to render charts using the browser
 pio.renderers.default = "browser"
 
-def get_portfolio_timeline_data():
-    """Fetch portfolio total value over time from database"""
+def get_portfolio_timeline_data(user_id=None):
+    """Fetch portfolio total value over time from database, filtered by user if provided"""
     conn = sqlite3.connect('data/portfolio.db')
 
-    # Query to get account total for each date
-    query = """
-    SELECT Date,
-        REPLACE(REPLACE(Mkt_Val , '$', ''), ',', '') as portfolio_value
-    FROM positions
-    WHERE Symbol = 'Account Total'
-    ORDER BY Date
-    """
+    # Query to get Account Total for each date
+    # Also exclude "Unknown" dates
+    if user_id:
+        query = """
+        SELECT Date,
+            CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT) as portfolio_value
+        FROM positions
+        WHERE Symbol = 'Account Total' AND user_id = ? AND Mkt_Val IS NOT NULL AND Date != 'Unknown' AND Date IS NOT NULL
+        ORDER BY Date
+        """
+        df = pd.read_sql_query(query, conn, params=(user_id,))
+    else:
+        query = """
+        SELECT Date,
+            CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT) as portfolio_value
+        FROM positions
+        WHERE Symbol = 'Account Total' AND Mkt_Val IS NOT NULL AND Date != 'Unknown' AND Date IS NOT NULL
+        ORDER BY Date
+        """
+        df = pd.read_sql_query(query, conn)
 
-    df = pd.read_sql_query(query, conn)
     conn.close()
 
+    # Return empty dataframe if no data
+    if df.empty:
+        return df
+
     # Convert portfolio_value to numeric
-    df['portfolio_value'] = pd.to_numeric(df['portfolio_value'])
-    df['Date'] = pd.to_datetime(df['Date'])
+    df['portfolio_value'] = pd.to_numeric(df['portfolio_value'], errors='coerce')
+
+    # Convert Date to datetime, handling invalid dates
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+
+    # Remove rows with invalid dates
+    df = df.dropna(subset=['Date'])
 
     # Sort by date to ensure chronological order
     df = df.sort_values('Date').reset_index(drop=True)
@@ -59,9 +79,9 @@ def get_FAKE_portfolio_timeline_data():
 
     return df
 
-def create_animated_timeline_graph():
+def create_animated_timeline_graph(user_id=None):
     """Create an animated line graph showing portfolio growth over time with smooth CSS animation"""
-    df = get_portfolio_timeline_data()
+    df = get_portfolio_timeline_data(user_id)
 
     # Create the complete figure with all data
     fig = go.Figure()
@@ -91,6 +111,7 @@ def create_animated_timeline_graph():
         xaxis=dict(
             title=dict(text='Date', font=dict(size=14, color='#F9F9F9', family='ClashDisplay')),
             tickfont=dict(color='#F9F9F9'),
+            tickformat='%m/%d/%Y',
             gridcolor='rgba(255, 255, 255, 0.1)',
             showgrid=True,
             range=[df['Date'].min(), df['Date'].max()],
@@ -179,39 +200,55 @@ def create_animated_timeline_graph():
     return html
 
 
-def get_holdings_by_type():
-    """Fetch holdings aggregated by Security_Type over time from database"""
+def get_holdings_by_type(user_id=None):
+    """Fetch holdings aggregated by Security_Type over time from database, filtered by user if provided"""
     conn = sqlite3.connect('data/portfolio.db')
 
-    # Query to get market value by security type for each date
-    query = """
-    SELECT Date,
-        Security_Type,
-        SUM(CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT)) as total_value
-    FROM positions
-    WHERE Symbol != 'Account Total' AND Security_Type IS NOT NULL AND Security_Type != ''
-    GROUP BY Date, Security_Type
-    ORDER BY Date, Security_Type
-    """
+    # Query to get market value by security type for each date, optionally filtered by user
+    if user_id:
+        query = """
+        SELECT Date,
+            Security_Type,
+            SUM(CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT)) as total_value
+        FROM positions
+        WHERE Symbol != 'Account Total' AND Security_Type IS NOT NULL AND Security_Type != '' AND user_id = ?
+        GROUP BY Date, Security_Type
+        ORDER BY Date, Security_Type
+        """
+        df = pd.read_sql_query(query, conn, params=(user_id,))
+    else:
+        query = """
+        SELECT Date,
+            Security_Type,
+            SUM(CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT)) as total_value
+        FROM positions
+        WHERE Symbol != 'Account Total' AND Security_Type IS NOT NULL AND Security_Type != ''
+        GROUP BY Date, Security_Type
+        ORDER BY Date, Security_Type
+        """
+        df = pd.read_sql_query(query, conn)
 
-    df = pd.read_sql_query(query, conn)
     conn.close()
+
+    # Return empty dataframe if no data
+    if df.empty:
+        return df
 
     # Convert to numeric and datetime
     df['total_value'] = pd.to_numeric(df['total_value'], errors='coerce')
-    df['Date'] = pd.to_datetime(df['Date'])
+    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
 
-    # Remove rows with null values
-    df = df.dropna()
+    # Remove rows with null values or invalid dates
+    df = df.dropna(subset=['Date', 'total_value'])
 
     # Sort by date
     df = df.sort_values('Date').reset_index(drop=True)
 
     return df
 
-def create_holdings_by_type_graph():
+def create_holdings_by_type_graph(user_id=None):
     """Create an animated pie chart showing distribution of holdings by security type"""
-    df = get_holdings_by_type()
+    df = get_holdings_by_type(user_id)
 
     if df.empty:
         # Return empty graph if no data
@@ -262,10 +299,11 @@ def create_holdings_by_type_graph():
             labels=labels,
             values=values,
             marker=dict(colors=pie_colors),
-            textposition='auto',
+            textposition='outside',
             textinfo='label+percent',
-            textfont=dict(size=12, color='#293949', family='ClashDisplay'),
+            textfont=dict(size=14, color='#293949', family='ClashDisplay', weight=500),
             hoverinfo='label+value+percent',
+            pull=[0.02] * len(labels),
         )]
     )
 
@@ -283,14 +321,16 @@ def create_holdings_by_type_graph():
         paper_bgcolor='rgba(0, 0, 0, 0)',
         font=dict(color='#F9F9F9', family='ClashDisplay'),
         showlegend=True,
+        xaxis=dict(domain=[0, 0.75]),
+        yaxis=dict(domain=[0, 1]),
         legend=dict(
             yanchor="middle",
             y=0.5,
             xanchor="left",
-            x=1.01,
+            x=1.05,
             bgcolor='rgba(41, 57, 73, 0.7)',
             bordercolor='rgba(249, 249, 249, 0.2)',
-            borderwidth=1
+            borderwidth=3
         ),
         margin=dict(l=20, r=250, t=60, b=10)
     )
@@ -323,6 +363,10 @@ def create_holdings_by_type_graph():
         #holdings-pie text {
             opacity: 1;
             font-family: 'ClashDisplay', sans-serif;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: pre-wrap;
+            max-width: 80px;
         }
 
         #holdings-pie .legendlayer text,
@@ -338,6 +382,15 @@ def create_holdings_by_type_graph():
 
         #holdings-pie .legendlayer text {
             dy: 0.35em;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 150px;
+            white-space: normal;
+        }
+
+        #holdings-pie .legendlayer {
+            max-width: 180px;
+            word-break: break-word;
         }
 
         #holdings-pie .hovertext {
