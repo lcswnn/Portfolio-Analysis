@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Utility script to delete a user from the User table in account-info.db
+Utility script to delete a user from the User table in portfolio.db
 Usage: Change the USER_ID variable below and run: python delete_first_user.py
 """
 
@@ -12,7 +12,7 @@ USER_ID = 2  # Set this to the ID of the user you want to delete
 
 def delete_user(user_id):
     """Delete a user by ID from the User table"""
-    db_path = '/Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/account-info.db'
+    db_path = '/Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
 
     try:
         connection = sqlite3.connect(db_path)

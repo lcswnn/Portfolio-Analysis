@@ -33,21 +33,38 @@
     <h1 id="secondary-header" class="fadeInUp-animation">Your Profile</h1>
   </div>
 
-  <div class="profile-container fadeInUp-animation">
-    <h2>Welcome, {{ current_user.firstname }} {{ current_user.lastname}}!</h2>
-    <p>This is your profile page. Here you can manage your account and view your portfolio.</p>
-    <div id="drop-zone">
-      Drag and drop files here or click to select
-      <input type="file" id="file-input" multiple style="display: none;">
-  </div>
-  <div id="file-list"></div>
-    <a href="{{url_for('logout')}}" id="button" class="fadeInUp-button">Log Out</a>
+  <div class="profile-first-container">
+    <div class="profile-container fadeInUp-animation">
+      <h2>Welcome, {{ current_user.firstname }} {{ current_user.lastname}}!</h2>
+      <p>This is your profile page. Here you can manage your account and view your portfolio.</p>
+      <div id="drop-zone">
+        Drag and drop files here or click to select
+        <input type="file" id="file-input" multiple style="display: none;">
+      </div>
+      <div id="file-list"></div>
+      <a href="{{url_for('logout')}}" id="button" class="fadeInUp-button">Log Out</a>
+    </div>
+    <div class="profile-pie-container fadeInUp-animation">
+      {{ holdings_graph_html|safe }}
+    </div>
   </div>
 
-  <div class="graph-container">
+  <div class="profile-graph-container">
     {{ graph_html|safe }}
   </div>
-  
+
+  <div class="file-container fadeInUp-animation">
+    <h2>Your Uploaded Files</h2>
+    {% if files %}
+      <ul>
+        {% for file in files %}
+          <li>{{ file.filename }} - Uploaded on {{ file.upload_date.strftime('%Y-%m-%d %H:%M:%S') }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No files uploaded yet.</p>
+    {% endif %}
+  </div>
 
   <div class="footer">
     <p>© 2025 OptiFiance. All rights reserved.</p>

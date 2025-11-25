@@ -5,7 +5,6 @@ db = SQLAlchemy()
 
 class Position(db.Model):
     __tablename__ = 'positions'
-    __bind_key__ = 'positions'
 
     id = db.Column(db.Integer, primary_key=True)
     Symbol = db.Column(db.String(50), nullable=True)

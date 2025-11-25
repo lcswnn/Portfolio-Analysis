@@ -11,15 +11,15 @@ import pandas as pd
 import re
 from io import StringIO
 from models import db, Position
+import time
 
 app = Flask(__name__)
+# Store the app startup time to invalidate old sessions
+APP_START_TIME = time.time()
 
-# Use account-info.db for user authentication
-account_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/account-info.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = account_db_uri
-app.config['SQLALCHEMY_BINDS'] = {
-    'positions': 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/positions.db'
-}
+# Use single portfolio.db for all data
+portfolio_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = portfolio_db_uri
 app.config['SECRET_KEY'] = 'secretkey'
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -36,6 +36,20 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
+    # Check if session was created before app startup
+    # If session_created is missing or older than app start time, invalidate session
+    session_created = request.cookies.get('session_created')
+
+    if not session_created:
+        return None
+
+    try:
+        session_time = float(session_created)
+        if session_time < APP_START_TIME:
+            return None
+    except (ValueError, TypeError):
+        return None
+
     return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
@@ -77,7 +91,7 @@ class LogInForm(FlaskForm):
 @app.route('/')
 def index():
     # Generate the animated timeline graph
-    graph_html = analytics.create_animated_timeline_graph()
+    graph_html = analytics.create_DUMMY_animated_timeline_graph()
     return render_template('index.html', graph_html=graph_html)
 
 @app.route('/about')
@@ -95,7 +109,10 @@ def login():
         ).first()
         if user and Bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('profile'))
+            response = redirect(url_for('profile'))
+            # Set session_created cookie to current time for logout-on-restart functionality
+            response.set_cookie('session_created', str(time.time()), max_age=2592000)  # 30 days
+            return response
 
     return render_template('login.html', form=form)
 
@@ -187,7 +204,8 @@ def process_csv_and_save_to_db(file_content):
 def profile():
     if request.method != 'POST':
         graph_html = analytics.create_animated_timeline_graph()
-        return render_template('profile.html', graph_html=graph_html)
+        holdings_graph_html = analytics.create_holdings_by_type_graph()
+        return render_template('profile.html', graph_html=graph_html, holdings_graph_html=holdings_graph_html)
     if 'file' not in request.files:
         return jsonify({'success': False, 'message': 'No file part'}), 400
     file = request.files['file']
