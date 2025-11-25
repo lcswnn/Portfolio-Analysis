@@ -11,7 +11,7 @@ pio.renderers.default = "browser"
 
 def get_portfolio_timeline_data():
     """Fetch portfolio total value over time from database"""
-    conn = sqlite3.connect('data/positions.db')
+    conn = sqlite3.connect('data/portfolio.db')
 
     # Query to get account total for each date
     query = """
@@ -36,12 +36,12 @@ def get_portfolio_timeline_data():
 
 def get_FAKE_portfolio_timeline_data():
     """Fetch portfolio total value over time from database"""
-    conn = sqlite3.connect('data/dummy_positions.db')
+    conn = sqlite3.connect('data/portfolio.db')
 
     # Query to get account total for each date
     query = """
     SELECT Date,
-        REPLACE(REPLACE(`Mkt Val (Market Value)`, '$', ''), ',', '') as portfolio_value
+        REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') as portfolio_value
     FROM positions
     WHERE Symbol = 'Account Total'
     ORDER BY Date
@@ -181,7 +181,7 @@ def create_animated_timeline_graph():
 
 def get_holdings_by_type():
     """Fetch holdings aggregated by Security_Type over time from database"""
-    conn = sqlite3.connect('data/positions.db')
+    conn = sqlite3.connect('data/portfolio.db')
 
     # Query to get market value by security type for each date
     query = """

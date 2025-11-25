@@ -1,6 +1,6 @@
 import sqlite3
 
-file_path = 'data/positions.db'
+file_path = 'data/portfolio.db'
 
 try:
     conn = sqlite3.connect(file_path)

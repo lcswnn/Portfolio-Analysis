@@ -17,12 +17,9 @@ app = Flask(__name__)
 # Store the app startup time to invalidate old sessions
 APP_START_TIME = time.time()
 
-# Use account-info.db for user authentication
-account_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/account-info.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = account_db_uri
-app.config['SQLALCHEMY_BINDS'] = {
-    'positions': 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/positions.db'
-}
+# Use single portfolio.db for all data
+portfolio_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = portfolio_db_uri
 app.config['SECRET_KEY'] = 'secretkey'
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
