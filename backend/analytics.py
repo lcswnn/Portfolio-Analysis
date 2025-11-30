@@ -7,7 +7,7 @@ import plotly.io as pio
 import sqlite3
 
 #set Plotly to render charts using the browser
-pio.renderers.default = "browser"
+# pio.renderers.default = "browser"  # Commented out for server environments (Flask/Gunicorn)
 
 def get_portfolio_timeline_data(user_id=None):
     """Fetch portfolio total value over time from database, filtered by user if provided"""
