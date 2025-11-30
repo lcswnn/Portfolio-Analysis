@@ -4,13 +4,13 @@ from flask_login import UserMixin, LoginManager, login_user, login_required, log
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
-import analytics
+from . import analytics
 from flask_bcrypt import Bcrypt
 import os
 import pandas as pd
 import re
 from io import StringIO
-from models import db, Position, UploadedFile
+from .models import db, Position, UploadedFile
 import time
 from datetime import datetime
 from catboost import CatBoostClassifier
@@ -398,7 +398,7 @@ def regenerate_stock_data():
     global REGENERATION_IN_PROGRESS
 
     try:
-        from stock_data_generator import generate_stock_features
+        from .stock_data_generator import generate_stock_features
         import threading
 
         # Run the data generation in a separate thread to avoid blocking
