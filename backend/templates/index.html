@@ -81,7 +81,7 @@
   <div class="content" id="content-section-right">
     <div id="button">
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('portfolio') }}" class="button fadeInUp-animation2">View your portfolio.</a>
+        <a href="{{ url_for('profile') }}" class="button fadeInUp-animation2">View your portfolio.</a>
       {% else %}
         <a href="{{ url_for('register') }}" class="button fadeInUp-animation2">View your portfolio.</a>
       {% endif %}
