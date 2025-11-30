@@ -922,13 +922,13 @@ form input {
   justify-content: center;
   width: 60px;
   height: 60px;
-  background-color: var(--blue);
-  color: var(--white);
+  background-color: var(--white);
+  color: var(--dark-grey);
   border-radius: 50%;
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 20px;
-  box-shadow: 0 4px 15px rgba(79, 118, 246, 0.4);
+  opacity: 0.7;
 }
 
 .step h3 {
@@ -1026,7 +1026,7 @@ form input {
   border-radius: 10px;
   border: 2px solid var(--dark-grey);
   color: var(--white);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   line-height: 1.8;
   min-height: 120px;
 }
@@ -1035,7 +1035,7 @@ form input {
   color: var(--white);
   display: block;
   margin-bottom: 8px;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 /* Stats Grid */
@@ -1235,7 +1235,7 @@ form input {
 .recommendations-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
   margin-top: 15px;
@@ -1249,11 +1249,11 @@ form input {
 
 .refresh-button,
 .regenerate-button {
-  padding: 10px 20px;
+  padding: 10px 5px;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-family: 'ClashDisplay', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease-out;
@@ -1264,34 +1264,33 @@ form input {
 }
 
 .refresh-button {
-  background-color: var(--blue);
+  background-color: rgba(212, 212, 212, 0.4);
+  color: var(--white);
 }
 
 .refresh-button:hover:not(:disabled) {
-  background-color: #3d5cc4;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 118, 246, 0.4);
+  background-color: rgb(41, 57, 73, 0.3);
+  color: var(--white);
 }
 
 .refresh-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(79, 118, 246, 0.4);
+  background-color: rgba(212, 212, 212, 0.4);
 }
 
 .regenerate-button {
-  background-color: var(--green);
-  color: var(--dark-grey);
+  background-color: rgba(212, 212, 212, 0.4);
+  color: var(--white);
 }
 
 .regenerate-button:hover:not(:disabled) {
-  background-color: #5fd87f;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(119, 242, 161, 0.4);
+  background-color: rgb(41, 57, 73, 0.3);
+  color: var(--white);
 }
 
 .regenerate-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(119, 242, 161, 0.4);
+  background-color: rgba(212, 212, 212, 0.4);
 }
 
 .refresh-button:disabled,

@@ -34,32 +34,32 @@
     <div class="top-recommendation-container fadeInUp-animation2">
         <div class="stats-grid">
             <div class="stat-card">
-                <h3><span class="counter" data-target="{{ stats.total_analyzed }}" data-format="number"></span></h3>
+                <h3><span class="counter" data-target="{{ stats.total_analyzed }}" data-format="number" data-stat="total_analyzed"></span></h3>
                 <p>Stocks Analyzed</p>
             </div>
             <div class="stat-card">
-                <h3><span class="counter" data-target="{{ stats.max_prob }}" data-format="percent"></span></h3>
+                <h3><span class="counter" data-target="{{ stats.max_prob }}" data-format="percent" data-stat="max_prob"></span></h3>
                 <p>Highest Probability</p>
             </div>
             <div class="stat-card">
-                <h3><span class="counter" data-target="{{ stats.above_55 }}" data-format="number"></span></h3>
+                <h3><span class="counter" data-target="{{ stats.above_55 }}" data-format="number" data-stat="above_55"></span></h3>
                 <p>Above 55% Probability</p>
             </div>
             <div class="stat-card">
-                <h3><span class="counter" data-target="{{ stats.above_50 }}" data-format="number"></span></h3>
+                <h3><span class="counter" data-target="{{ stats.above_50 }}" data-format="number" data-stat="above_50"></span></h3>
                 <p>Above 50% Probability</p>
             </div>
         </div>
+        <p class="last-updated">Last data from: <span id="last-updated-date">{{ stats.last_updated }}</span></p>
         <div class="recommendations-controls">
-            <p class="last-updated">Last data from: <span id="last-updated-date">{{ stats.last_updated }}</span></p>
             <div class="button-group">
+                <button id="regenerate-btn" class="regenerate-button" onclick="regenerateStockData()" title="Download fresh data from yfinance (10-20 min)">
+                    <span id="regenerate-btn-text">Regenerate Stock Data</span>
+                    <span id="regenerate-spinner" class="spinner" style="display:none;"></span>
+                </button>
                 <button id="refresh-btn" class="refresh-button" onclick="refreshRecommendations()">
                     <span id="refresh-btn-text">Refresh Data</span>
                     <span id="refresh-spinner" class="spinner" style="display:none;"></span>
-                </button>
-                <button id="regenerate-btn" class="regenerate-button" onclick="regenerateStockData()" title="Download fresh data from yfinance (30-60 min)">
-                    <span id="regenerate-btn-text">Regenerate Stock Data</span>
-                    <span id="regenerate-spinner" class="spinner" style="display:none;"></span>
                 </button>
             </div>
         </div>

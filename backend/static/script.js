@@ -1,3 +1,66 @@
+// Check regeneration status as early as possible
+function checkRegenerationStatusEarly() {
+    const isRegenerating = localStorage.getItem('isRegeneratingStockData');
+    if (isRegenerating === 'true') {
+        const startTime = parseInt(localStorage.getItem('regenerationStartTime'));
+        const now = Date.now();
+        const elapsedMs = now - startTime;
+
+        // If more than 100 minutes have passed, assume the process is dead and clear the state
+        if (elapsedMs > 100 * 60 * 1000) {
+            localStorage.removeItem('isRegeneratingStockData');
+            localStorage.removeItem('regenerationStartTime');
+            return;
+        }
+
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const regenerateBtnText = document.getElementById('regenerate-btn-text');
+        const regenerateSpinner = document.getElementById('regenerate-spinner');
+
+        if (regenerateBtn && regenerateBtnText && regenerateSpinner) {
+            regenerateBtn.disabled = true;
+            regenerateSpinner.style.display = 'inline-block';
+
+            const elapsedMinutes = Math.floor(elapsedMs / 60000);
+            regenerateBtnText.textContent = `Processing... (${elapsedMinutes} min elapsed)`;
+
+            // Verify the task is actually still running on the backend
+            verifyRegenerationTaskRunning();
+        }
+    }
+}
+
+// Verify that the regeneration task is actually running on the backend
+function verifyRegenerationTaskRunning() {
+    fetch('/api/regeneration-status')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.is_running) {
+                // Task is not actually running, clear localStorage
+                localStorage.removeItem('isRegeneratingStockData');
+                localStorage.removeItem('regenerationStartTime');
+
+                // Reset button UI
+                const regenerateBtn = document.getElementById('regenerate-btn');
+                const regenerateBtnText = document.getElementById('regenerate-btn-text');
+                const regenerateSpinner = document.getElementById('regenerate-spinner');
+
+                if (regenerateBtn && regenerateBtnText && regenerateSpinner) {
+                    regenerateBtn.disabled = false;
+                    regenerateBtnText.textContent = 'Regenerate Stock Data';
+                    regenerateSpinner.style.display = 'none';
+                }
+            }
+        })
+        .catch(() => {
+            // If the API call fails, assume the task might still be running
+            // (server might be temporarily unavailable)
+        });
+}
+
+// Try to check status immediately (elements may not exist yet, that's ok)
+checkRegenerationStatusEarly();
+
 // Auto-play the animation when the page loads
 window.addEventListener('load', function() {
   setTimeout(function() {
@@ -336,17 +399,11 @@ function refreshRecommendations() {
             counters.forEach(counter => {
                 counter.removeAttribute('data-animated');
 
-                if (counter.getAttribute('data-format') === 'number') {
-                    counter.setAttribute('data-target',
-                        counter.textContent.includes('Stocks Analyzed') ? stats.total_analyzed :
-                        counter.textContent.includes('55%') ? stats.above_55 :
-                        counter.textContent.includes('50%') ? stats.above_50 : 0
-                    );
-                } else {
-                    counter.setAttribute('data-target', stats.max_prob);
-                }
+                const statType = counter.getAttribute('data-stat');
+                const newValue = stats[statType];
+                counter.setAttribute('data-target', newValue);
 
-                animateCounter(counter, parseFloat(counter.getAttribute('data-target')), 2000);
+                animateCounter(counter, parseFloat(newValue), 2000);
             });
 
             // Update the last updated date
@@ -408,8 +465,12 @@ function regenerateStockData() {
 
     // Disable button and show loading state
     regenerateBtn.disabled = true;
-    regenerateBtnText.textContent = 'Regenerating...';
+    regenerateBtnText.textContent = 'Starting...';
     regenerateSpinner.style.display = 'inline-block';
+
+    // Save regeneration state to localStorage
+    localStorage.setItem('isRegeneratingStockData', 'true');
+    localStorage.setItem('regenerationStartTime', Date.now().toString());
 
     fetch('/api/regenerate-stock-data', {
         method: 'POST'
@@ -417,10 +478,7 @@ function regenerateStockData() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            regenerateBtn.disabled = false;
-            regenerateBtnText.textContent = 'Regenerate Stock Data';
-            regenerateSpinner.style.display = 'none';
-
+            regenerateBtnText.textContent = 'Processing... (10-20 min)';
             showNotification(data.message, 'info');
 
             // Poll for completion every 30 seconds and refresh recommendations when done
@@ -429,23 +487,42 @@ function regenerateStockData() {
             const pollInterval = setInterval(() => {
                 pollCount++;
 
+                // Update status text with elapsed time estimate
+                const elapsedMinutes = Math.floor((pollCount * 30) / 60);
+                regenerateBtnText.textContent = `Processing... (${elapsedMinutes} min elapsed)`;
+
                 // Check if we can load the new data by trying to refresh
                 fetch('/api/refresh-recommendations', { method: 'POST' })
                     .then(response => response.json())
                     .then(pollData => {
                         if (pollData.success) {
                             // Data regeneration likely complete, show success
+                            regenerateBtnText.textContent = 'Finalizing...';
                             showNotification('Stock data regeneration complete! Recommendations updated.', 'success');
                             clearInterval(pollInterval);
 
                             // Update recommendations on page
                             updateRecommendationsFromData(pollData);
+
+                            // Reset button after a short delay and clear localStorage
+                            setTimeout(() => {
+                                regenerateBtn.disabled = false;
+                                regenerateBtnText.textContent = 'Regenerate Stock Data';
+                                regenerateSpinner.style.display = 'none';
+                                localStorage.removeItem('isRegeneratingStockData');
+                                localStorage.removeItem('regenerationStartTime');
+                            }, 1000);
                         }
                     })
                     .catch(() => {
                         // Still generating, continue polling
                         if (pollCount >= maxPolls) {
                             clearInterval(pollInterval);
+                            regenerateBtn.disabled = false;
+                            regenerateBtnText.textContent = 'Regenerate Stock Data';
+                            regenerateSpinner.style.display = 'none';
+                            localStorage.removeItem('isRegeneratingStockData');
+                            localStorage.removeItem('regenerationStartTime');
                             showNotification('Stock data regeneration may still be running. Please refresh the page manually.', 'info');
                         }
                     });
@@ -455,6 +532,8 @@ function regenerateStockData() {
             regenerateBtn.disabled = false;
             regenerateBtnText.textContent = 'Regenerate Stock Data';
             regenerateSpinner.style.display = 'none';
+            localStorage.removeItem('isRegeneratingStockData');
+            localStorage.removeItem('regenerationStartTime');
 
             showNotification('Failed to start regeneration: ' + data.error, 'error');
         }
@@ -465,16 +544,81 @@ function regenerateStockData() {
         regenerateBtn.disabled = false;
         regenerateBtnText.textContent = 'Regenerate Stock Data';
         regenerateSpinner.style.display = 'none';
+        localStorage.removeItem('isRegeneratingStockData');
+        localStorage.removeItem('regenerationStartTime');
 
         showNotification('Failed to start data regeneration: ' + error.message, 'error');
     });
 }
 
+
+// Set up polling when DOM is ready (button state already set by checkRegenerationStatusEarly)
+document.addEventListener('DOMContentLoaded', function() {
+    const isRegenerating = localStorage.getItem('isRegeneratingStockData');
+    if (isRegenerating === 'true') {
+        const startTime = parseInt(localStorage.getItem('regenerationStartTime'));
+        const now = Date.now();
+        const elapsedMs = now - startTime;
+
+        // If more than 100 minutes have passed, assume the process is dead and clear the state
+        if (elapsedMs > 100 * 60 * 1000) {
+            localStorage.removeItem('isRegeneratingStockData');
+            localStorage.removeItem('regenerationStartTime');
+            return;
+        }
+
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const regenerateBtnText = document.getElementById('regenerate-btn-text');
+        const regenerateSpinner = document.getElementById('regenerate-spinner');
+
+        // Resume polling for completion
+        let elapsedMinutes = Math.floor(elapsedMs / 60000);
+        let pollCount = Math.floor(elapsedMs / 30000);
+        const maxPolls = 200;
+
+        const pollInterval = setInterval(() => {
+            pollCount++;
+            const totalElapsedMinutes = elapsedMinutes + Math.floor((pollCount * 30000) / 60000);
+            regenerateBtnText.textContent = `Processing... (${totalElapsedMinutes} min elapsed)`;
+
+            fetch('/api/refresh-recommendations', { method: 'POST' })
+                .then(response => response.json())
+                .then(pollData => {
+                    if (pollData.success) {
+                        regenerateBtnText.textContent = 'Finalizing...';
+                        showNotification('Stock data regeneration complete! Recommendations updated.', 'success');
+                        clearInterval(pollInterval);
+                        updateRecommendationsFromData(pollData);
+
+                        setTimeout(() => {
+                            regenerateBtn.disabled = false;
+                            regenerateBtnText.textContent = 'Regenerate Stock Data';
+                            regenerateSpinner.style.display = 'none';
+                            localStorage.removeItem('isRegeneratingStockData');
+                            localStorage.removeItem('regenerationStartTime');
+                        }, 1000);
+                    }
+                })
+                .catch(() => {
+                    if (pollCount >= maxPolls) {
+                        clearInterval(pollInterval);
+                        regenerateBtn.disabled = false;
+                        regenerateBtnText.textContent = 'Regenerate Stock Data';
+                        regenerateSpinner.style.display = 'none';
+                        localStorage.removeItem('isRegeneratingStockData');
+                        localStorage.removeItem('regenerationStartTime');
+                        showNotification('Stock data regeneration may still be running. Please refresh the page manually.', 'info');
+                    }
+                });
+        }, 30000);
+    }
+});
+
 // Helper function to update recommendations on the page
 function updateRecommendationsFromData(data) {
     if (!data.success) return;
 
-    const stats = data.stats;
+    const { stats } = data;
     const tableBody = document.querySelector('.recommendations-table tbody');
 
     // Update counter values (reset animation for smooth re-count)
@@ -482,17 +626,11 @@ function updateRecommendationsFromData(data) {
     counters.forEach(counter => {
         counter.removeAttribute('data-animated');
 
-        if (counter.getAttribute('data-format') === 'number') {
-            counter.setAttribute('data-target',
-                counter.textContent.includes('Stocks Analyzed') ? stats.total_analyzed :
-                counter.textContent.includes('55%') ? stats.above_55 :
-                counter.textContent.includes('50%') ? stats.above_50 : 0
-            );
-        } else {
-            counter.setAttribute('data-target', stats.max_prob);
-        }
+        const statType = counter.getAttribute('data-stat');
+        const newValue = stats[statType];
+        counter.setAttribute('data-target', newValue);
 
-        animateCounter(counter, parseFloat(counter.getAttribute('data-target')), 2000);
+        animateCounter(counter, parseFloat(newValue), 2000);
     });
 
     // Update the last updated date

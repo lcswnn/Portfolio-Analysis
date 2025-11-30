@@ -20,6 +20,9 @@ app = Flask(__name__)
 # Store the app startup time to invalidate old sessions
 APP_START_TIME = time.time()
 
+# Track if stock data regeneration is currently running
+REGENERATION_IN_PROGRESS = False
+
 # Use single portfolio.db for all data
 portfolio_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = portfolio_db_uri
@@ -392,18 +395,24 @@ def refresh_recommendations():
 @login_required
 def regenerate_stock_data():
     """API endpoint to regenerate stock_features.csv from yfinance data"""
+    global REGENERATION_IN_PROGRESS
+
     try:
         from stock_data_generator import generate_stock_features
         import threading
 
         # Run the data generation in a separate thread to avoid blocking
         def generate_and_return():
+            global REGENERATION_IN_PROGRESS
             try:
+                REGENERATION_IN_PROGRESS = True
                 # Generate new stock features
                 generate_stock_features('../backend/stock_features.csv')
                 print("Stock data regeneration complete!")
             except Exception as e:
                 print(f"Error in regeneration thread: {e}")
+            finally:
+                REGENERATION_IN_PROGRESS = False
 
         # Start in background thread
         thread = threading.Thread(target=generate_and_return)
@@ -412,13 +421,20 @@ def regenerate_stock_data():
 
         return jsonify({
             'success': True,
-            'message': 'Stock data regeneration started. This may take 30-60 minutes. The recommendations page will update automatically when complete.'
+            'message': 'Stock data regeneration started. This may take 1020 minutes. The recommendations page will update automatically when complete.'
         })
     except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/api/regeneration-status', methods=['GET'])
+def regeneration_status():
+    """API endpoint to check if stock data regeneration is running"""
+    return jsonify({
+        'is_running': REGENERATION_IN_PROGRESS
+    })
 
 @app.route('/delete-file/<int:file_id>', methods=['DELETE'])
 @login_required
