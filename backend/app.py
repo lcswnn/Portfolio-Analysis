@@ -319,6 +319,107 @@ def optimize():
     
     return render_template('recommend.html', recommendations=recommendations, stats=stats)
 
+def get_recommendations_from_csv(csv_path='../backend/stock_features.csv'):
+    """Helper function to load CSV and generate recommendations."""
+    df = pd.read_csv(csv_path)
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.replace([np.inf, -np.inf], np.nan)
+    df = df.dropna()
+
+    feature_cols = [
+        'momentum', 'volatility', 'avg_correlation', 'max_correlation',
+        'min_correlation', 'market_correlation', 'sharpe', 'momentum_accel',
+        'dividend_yield'
+    ]
+
+    # Train model
+    model = CatBoostClassifier(
+        iterations=200,
+        depth=4,
+        learning_rate=0.05,
+        random_state=42,
+        verbose=False
+    )
+    model.fit(df[feature_cols], df['beat_market'])
+
+    # Get latest data
+    latest_date = df['date'].max()
+    latest = df[df['date'] == latest_date].copy()
+    latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
+
+    # Get top recommendations
+    top_picks = latest[latest['prob_beat_market'] >= 0.5].sort_values(
+        'prob_beat_market', ascending=False
+    ).head(20)
+
+    # Convert to list of dicts for JSON response
+    recommendations = top_picks[[
+        'ticker', 'prob_beat_market', 'sharpe', 'momentum', 'momentum_accel', 'volatility', 'dividend_yield', 'avg_correlation', 'market_correlation'
+    ]].to_dict('records')
+
+    # Summary stats
+    stats = {
+        'total_analyzed': len(latest),
+        'above_50': len(latest[latest['prob_beat_market'] > 0.5]),
+        'above_55': len(latest[latest['prob_beat_market'] > 0.55]),
+        'above_60': len(latest[latest['prob_beat_market'] > 0.6]),
+        'avg_prob': latest['prob_beat_market'].mean() * 100,
+        'max_prob': latest['prob_beat_market'].max() * 100,
+        'last_updated': latest_date.strftime('%Y-%m-%d')
+    }
+
+    return recommendations, stats
+
+@app.route('/api/refresh-recommendations', methods=['POST'])
+@login_required
+def refresh_recommendations():
+    """API endpoint to refresh recommendations with existing data"""
+    try:
+        recommendations, stats = get_recommendations_from_csv()
+
+        return jsonify({
+            'success': True,
+            'recommendations': recommendations,
+            'stats': stats
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/regenerate-stock-data', methods=['POST'])
+@login_required
+def regenerate_stock_data():
+    """API endpoint to regenerate stock_features.csv from yfinance data"""
+    try:
+        from stock_data_generator import generate_stock_features
+        import threading
+
+        # Run the data generation in a separate thread to avoid blocking
+        def generate_and_return():
+            try:
+                # Generate new stock features
+                generate_stock_features('../backend/stock_features.csv')
+                print("Stock data regeneration complete!")
+            except Exception as e:
+                print(f"Error in regeneration thread: {e}")
+
+        # Start in background thread
+        thread = threading.Thread(target=generate_and_return)
+        thread.daemon = True
+        thread.start()
+
+        return jsonify({
+            'success': True,
+            'message': 'Stock data regeneration started. This may take 30-60 minutes. The recommendations page will update automatically when complete.'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.route('/delete-file/<int:file_id>', methods=['DELETE'])
 @login_required
 def delete_file(file_id):

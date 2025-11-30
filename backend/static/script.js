@@ -309,3 +309,259 @@ function deleteFile(fileId) {
         alert('Failed to delete file');
     });
 }
+
+// Refresh recommendations with latest data from stock_features.csv
+function refreshRecommendations() {
+    const refreshBtn = document.getElementById('refresh-btn');
+    const refreshBtnText = document.getElementById('refresh-btn-text');
+    const refreshSpinner = document.getElementById('refresh-spinner');
+    const tableBody = document.querySelector('.recommendations-table tbody');
+
+    // Disable button and show loading state
+    refreshBtn.disabled = true;
+    refreshBtnText.textContent = 'Updating...';
+    refreshSpinner.style.display = 'inline-block';
+
+    fetch('/api/refresh-recommendations', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the stats
+            const stats = data.stats;
+
+            // Update counter values (reset animation for smooth re-count)
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                counter.removeAttribute('data-animated');
+
+                if (counter.getAttribute('data-format') === 'number') {
+                    counter.setAttribute('data-target',
+                        counter.textContent.includes('Stocks Analyzed') ? stats.total_analyzed :
+                        counter.textContent.includes('55%') ? stats.above_55 :
+                        counter.textContent.includes('50%') ? stats.above_50 : 0
+                    );
+                } else {
+                    counter.setAttribute('data-target', stats.max_prob);
+                }
+
+                animateCounter(counter, parseFloat(counter.getAttribute('data-target')), 2000);
+            });
+
+            // Update the last updated date
+            document.getElementById('last-updated-date').textContent = stats.last_updated;
+
+            // Clear and rebuild the table with new recommendations
+            tableBody.innerHTML = '';
+            data.recommendations.forEach((stock, index) => {
+                const row = document.createElement('tr');
+                row.classList.add('fade-in-row');
+
+                const positive = stock.momentum > 0 ? 'positive' : 'negative';
+                const accelPositive = stock.momentum_accel > 0 ? 'positive' : 'negative';
+                const highProb = stock.prob_beat_market > 0.55 ? 'high-prob' : '';
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="ticker">${stock.ticker}</td>
+                    <td class="${highProb}">${(stock.prob_beat_market * 100).toFixed(1)}%</td>
+                    <td>${stock.sharpe.toFixed(2)}</td>
+                    <td class="${positive}">${(stock.momentum * 100).toFixed(1)}%</td>
+                    <td class="${accelPositive}">${(stock.momentum_accel * 100).toFixed(1)}%</td>
+                    <td>${(stock.volatility * 100).toFixed(1)}%</td>
+                    <td>${(stock.dividend_yield * 100).toFixed(2)}%</td>
+                    <td>${(stock.avg_correlation * 100).toFixed(1)}%</td>
+                    <td>${(stock.market_correlation * 100).toFixed(1)}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Re-enable button and hide loading state
+            refreshBtn.disabled = false;
+            refreshBtnText.textContent = 'Refresh Data';
+            refreshSpinner.style.display = 'none';
+
+            // Show success message
+            showNotification('Recommendations updated successfully!', 'success');
+        } else {
+            throw new Error(data.error || 'Unknown error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+
+        // Re-enable button and hide loading state
+        refreshBtn.disabled = false;
+        refreshBtnText.textContent = 'Refresh Data';
+        refreshSpinner.style.display = 'none';
+
+        showNotification('Failed to refresh recommendations: ' + error.message, 'error');
+    });
+}
+
+// Regenerate stock_features.csv from fresh yfinance data
+function regenerateStockData() {
+    const regenerateBtn = document.getElementById('regenerate-btn');
+    const regenerateBtnText = document.getElementById('regenerate-btn-text');
+    const regenerateSpinner = document.getElementById('regenerate-spinner');
+
+    // Disable button and show loading state
+    regenerateBtn.disabled = true;
+    regenerateBtnText.textContent = 'Regenerating...';
+    regenerateSpinner.style.display = 'inline-block';
+
+    fetch('/api/regenerate-stock-data', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            regenerateBtn.disabled = false;
+            regenerateBtnText.textContent = 'Regenerate Stock Data';
+            regenerateSpinner.style.display = 'none';
+
+            showNotification(data.message, 'info');
+
+            // Poll for completion every 30 seconds and refresh recommendations when done
+            let pollCount = 0;
+            const maxPolls = 200; // ~100 minutes max
+            const pollInterval = setInterval(() => {
+                pollCount++;
+
+                // Check if we can load the new data by trying to refresh
+                fetch('/api/refresh-recommendations', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(pollData => {
+                        if (pollData.success) {
+                            // Data regeneration likely complete, show success
+                            showNotification('Stock data regeneration complete! Recommendations updated.', 'success');
+                            clearInterval(pollInterval);
+
+                            // Update recommendations on page
+                            updateRecommendationsFromData(pollData);
+                        }
+                    })
+                    .catch(() => {
+                        // Still generating, continue polling
+                        if (pollCount >= maxPolls) {
+                            clearInterval(pollInterval);
+                            showNotification('Stock data regeneration may still be running. Please refresh the page manually.', 'info');
+                        }
+                    });
+            }, 30000); // Poll every 30 seconds
+
+        } else {
+            regenerateBtn.disabled = false;
+            regenerateBtnText.textContent = 'Regenerate Stock Data';
+            regenerateSpinner.style.display = 'none';
+
+            showNotification('Failed to start regeneration: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+
+        regenerateBtn.disabled = false;
+        regenerateBtnText.textContent = 'Regenerate Stock Data';
+        regenerateSpinner.style.display = 'none';
+
+        showNotification('Failed to start data regeneration: ' + error.message, 'error');
+    });
+}
+
+// Helper function to update recommendations on the page
+function updateRecommendationsFromData(data) {
+    if (!data.success) return;
+
+    const stats = data.stats;
+    const tableBody = document.querySelector('.recommendations-table tbody');
+
+    // Update counter values (reset animation for smooth re-count)
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        counter.removeAttribute('data-animated');
+
+        if (counter.getAttribute('data-format') === 'number') {
+            counter.setAttribute('data-target',
+                counter.textContent.includes('Stocks Analyzed') ? stats.total_analyzed :
+                counter.textContent.includes('55%') ? stats.above_55 :
+                counter.textContent.includes('50%') ? stats.above_50 : 0
+            );
+        } else {
+            counter.setAttribute('data-target', stats.max_prob);
+        }
+
+        animateCounter(counter, parseFloat(counter.getAttribute('data-target')), 2000);
+    });
+
+    // Update the last updated date
+    document.getElementById('last-updated-date').textContent = stats.last_updated;
+
+    // Clear and rebuild the table with new recommendations
+    tableBody.innerHTML = '';
+    data.recommendations.forEach((stock, index) => {
+        const row = document.createElement('tr');
+        row.classList.add('fade-in-row');
+
+        const positive = stock.momentum > 0 ? 'positive' : 'negative';
+        const accelPositive = stock.momentum_accel > 0 ? 'positive' : 'negative';
+        const highProb = stock.prob_beat_market > 0.55 ? 'high-prob' : '';
+
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td class="ticker">${stock.ticker}</td>
+            <td class="${highProb}">${(stock.prob_beat_market * 100).toFixed(1)}%</td>
+            <td>${stock.sharpe.toFixed(2)}</td>
+            <td class="${positive}">${(stock.momentum * 100).toFixed(1)}%</td>
+            <td class="${accelPositive}">${(stock.momentum_accel * 100).toFixed(1)}%</td>
+            <td>${(stock.volatility * 100).toFixed(1)}%</td>
+            <td>${(stock.dividend_yield * 100).toFixed(2)}%</td>
+            <td>${(stock.avg_correlation * 100).toFixed(1)}%</td>
+            <td>${(stock.market_correlation * 100).toFixed(1)}%</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Show notification message
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+        max-width: 400px;
+        word-wrap: break-word;
+    `;
+
+    // Style based on type
+    if (type === 'success') {
+        notification.style.backgroundColor = '#4caf50';
+        notification.style.color = 'white';
+    } else if (type === 'error') {
+        notification.style.backgroundColor = '#f44336';
+        notification.style.color = 'white';
+    } else {
+        notification.style.backgroundColor = '#2196F3';
+        notification.style.color = 'white';
+    }
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 5 seconds (longer for info messages)
+    const duration = type === 'info' ? 5000 : 3000;
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, duration);
+}
