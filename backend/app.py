@@ -124,12 +124,24 @@ def login():
         user = User.query.filter(
             (User.username == form.username.data) | (User.email == form.username.data)
         ).first()
-        if user and Bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user)
-            response = redirect(url_for('profile'))
-            # Set session_created cookie to current time for logout-on-restart functionality
-            response.set_cookie('session_created', str(time.time()), max_age=2592000)  # 30 days
-            return response
+
+        if user:
+            print(f"DEBUG: User found: {user.username}")
+            print(f"DEBUG: Stored password type: {type(user.password)}")
+            print(f"DEBUG: Stored password: {user.password}")
+            try:
+                password_match = Bcrypt.check_password_hash(user.password, form.password.data)
+                print(f"DEBUG: Password match result: {password_match}")
+                if password_match:
+                    login_user(user)
+                    response = redirect(url_for('profile'))
+                    # Set session_created cookie to current time for logout-on-restart functionality
+                    response.set_cookie('session_created', str(time.time()), max_age=2592000)  # 30 days
+                    return response
+            except Exception as e:
+                print(f"DEBUG: Password check error: {e}")
+        else:
+            print(f"DEBUG: User not found: {form.username.data}")
 
     return render_template('login.html', form=form)
 
