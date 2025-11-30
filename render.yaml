@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: portfolio-analysis
+    env: python
+    plan: free
+    pythonVersion: 3.11
+    buildCommand: pip install --upgrade pip setuptools && pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn backend.app:app
+    envVars:
+      - key: DB_HOST
+        scope: all
+      - key: DB_PORT
+        scope: all
+      - key: DB_USER
+        scope: all
+      - key: DB_PASSWORD
+        scope: all
+      - key: DB_NAME
+        scope: all
+      - key: SECRET_KEY
+        scope: all
