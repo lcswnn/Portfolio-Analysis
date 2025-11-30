@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles.css">
+    <title>Portfolio Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon_io-2/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon_io-2/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon_io-2/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon_io-2/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_io-2/favicon.ico') }}">
+</head>
+<body>
+    <div id="nav-bar">
+        <ul>
+            <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
+            <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
+            {% if current_user.is_authenticated %}
+            <li><a class="hover-underline" href="{{ url_for('optimize') }}"> Recommendations </a></li>
+            <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
+            <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
+            {% else %}
+            <li><a class="hover-underline" href="{{ url_for('register') }}"> Sign Up </a></li>
+            <li><a class="hover-underline" href="{{ url_for('login') }}"> Log In </a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="header">
+        <h1 id="secondary-header" class="fadeInUp-animation">Stock Recommendations</h1>
+    </div>
+
+    <div class="top-recommendation-container fadeInUp-animation2">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.total_analyzed }}" data-format="number" data-stat="total_analyzed"></span></h3>
+                <p>Stocks Analyzed</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.max_prob }}" data-format="percent" data-stat="max_prob"></span></h3>
+                <p>Highest Probability</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.above_55 }}" data-format="number" data-stat="above_55"></span></h3>
+                <p>Above 55% Probability</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.above_50 }}" data-format="number" data-stat="above_50"></span></h3>
+                <p>Above 50% Probability</p>
+            </div>
+        </div>
+        <p class="last-updated">Last data from: <span id="last-updated-date">{{ stats.last_updated }}</span></p>
+        <div class="recommendations-controls">
+            <div class="button-group">
+                <button id="regenerate-btn" class="regenerate-button" onclick="regenerateStockData()" title="Download fresh data from yfinance (10-20 min)">
+                    <span id="regenerate-btn-text">Regenerate Stock Data</span>
+                    <span id="regenerate-spinner" class="spinner" style="display:none;"></span>
+                </button>
+                <button id="refresh-btn" class="refresh-button" onclick="refreshRecommendations()">
+                    <span id="refresh-btn-text">Refresh Data</span>
+                    <span id="refresh-spinner" class="spinner" style="display:none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="optimize-container fadeInUp-animation">
+        <!-- Summary Stats -->
+        <p class="top-recommendations">Top 20 CatBoost Model Recommendations:</p>
+
+        <!-- Recommendations Table -->
+        <div class="table-container">
+            <table class="recommendations-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Ticker</th>
+                        <th>Probability %</th>
+                        <th>Sharpe Ratio</th>
+                        <th>Momentum %</th>
+                        <th>Momentum Accel %</th>
+                        <th>Volatility %</th>
+                        <th>Dividend %</th>
+                        <th>Avg Correlation</th>
+                        <th>Market Correlation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in recommendations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="ticker">{{ stock.ticker }}</td>
+                        <td class="{% if stock.prob_beat_market > 0.55 %}high-prob{% endif %}">
+                            {{ "%.1f"|format(stock.prob_beat_market * 100) }}%
+                        </td>
+                        <td>{{ "%.2f"|format(stock.sharpe) }}</td>
+                        <td class="{% if stock.momentum > 0 %}positive{% else %}negative{% endif %}">
+                            {{ "%.1f"|format(stock.momentum * 100) }}%
+                        </td>
+                        <td class="{% if stock.momentum_accel > 0 %}positive{% else %}negative{% endif %}">
+                            {{ "%.1f"|format(stock.momentum_accel * 100) }}%
+                        </td>
+                        <td>{{ "%.1f"|format(stock.volatility * 100) }}%</td>
+                        <td>{{ "%.2f"|format(stock.dividend_yield * 100) }}%</td>
+                        <td>{{ "%.1f"|format(stock.avg_correlation * 100) }}%</td>
+                        <td>{{ "%.1f"|format(stock.market_correlation * 100) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h4>How to Read This Table:</h4>
+            <ul>
+                <li><strong>Probability %:</strong> Chance of beating the market (higher = better)</li>
+                <li><strong>Sharpe Ratio:</strong> Risk-adjusted returns - return earned per unit of risk (higher = better)</li>
+                <li><strong>Momentum %:</strong> Past 6-month return (green = up, red = down)</li>
+                <li><strong>Momentum Accel %:</strong> Acceleration of momentum - is the trend speeding up or slowing (green = accelerating, red = decelerating)</li>
+                <li><strong>Volatility %:</strong> Price swing range (lower = more stable)</li>
+                <li><strong>Dividend %:</strong> Annual dividend yield (income per $100 invested)</li>
+                <li><strong>Avg Correlation:</strong> Average correlation with other recommended stocks (lower = more diversified)</li>
+                <li><strong>Market Correlation:</strong> How much the stock moves with the overall market (lower = better diversification benefit)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 OptiFiance. All rights reserved.</p>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
