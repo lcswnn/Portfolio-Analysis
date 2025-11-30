@@ -18,8 +18,8 @@
       <li><a class="hover-underline" href="{{ url_for('index') }}"> Home </a></li>
       <li><a class="hover-underline" href="{{ url_for('about') }}"> About </a></li>
       {% if current_user.is_authenticated %}
-        <li><a class="hover-underline" href="{{ url_for('portfolio') }}"> Portfolio </a></li>
-        <li><a class="hover-underline" href="{{ url_for('optimize') }}"> Optimization </a></li>
+        
+        <li><a class="hover-underline" href="{{ url_for('optimize') }}"> Recommendations </a></li>
         <li><a class="hover-underline" href="{{ url_for('profile') }}"> Profile </a></li>
         <li><a class="hover-underline" href="{{ url_for('logout') }}"> Log Out </a></li>
       {% else %}
@@ -31,7 +31,7 @@
 
   <div class="header">
     <h1 id="secondary-header" class="fadeInUp-animation">About OptiFinance</h1>
-    <h2 class="fadeInUp-animation2">Intelligent Portfolio Optimization Using Machine Learning</h2>
+    <h2 class="fadeInUp-animation2">Intelligent Portfolio Recommendations Using Machine Learning</h2>
   </div>
 
   <div class="about-container">
@@ -39,7 +39,7 @@
     <!-- What is OptiFinance Section -->
     <section class="about-section">
       <h2 class="section-title">What is OptiFinance?</h2>
-      <p>OptiFinance is an intelligent portfolio analysis and optimization platform powered by advanced machine learning algorithms. We help investors make data-driven decisions by analyzing your portfolio and providing actionable trading recommendations.</p>
+      <p>OptiFinance is an intelligent portfolio analysis and recommendation platform powered by advanced machine learning algorithms. We help investors make data-driven decisions by analyzing your portfolio and providing actionable trading recommendations.</p>
       <p>Our system evaluates your stocks and provides three key insights: <strong>Risk Assessment</strong>, <strong>Portfolio Health</strong>, and <strong>Trading Recommendations</strong> (Buy, Hold, or Sell signals).</p>
     </section>
 

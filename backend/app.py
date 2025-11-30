@@ -13,6 +13,8 @@ from io import StringIO
 from models import db, Position, UploadedFile
 import time
 from datetime import datetime
+from catboost import CatBoostClassifier
+import numpy as np
 
 app = Flask(__name__)
 # Store the app startup time to invalidate old sessions
@@ -210,10 +212,7 @@ def process_csv_and_save_to_db(file_content, user_id, filename):
                 if csv_col in row.index:
                     # Convert NaN/None to None for proper NULL storage
                     value = row[csv_col]
-                    if pd.isna(value):
-                        value = None
-                    else:
-                        value = str(value).strip()
+                    value = None if pd.isna(value) else str(value).strip()
                     setattr(position, db_col, value)
             db.session.add(position)
             position_count += 1
@@ -267,10 +266,58 @@ def profile():
 def portfolio():
     return render_template('portfolio.html')
 
-@app.route('/optimization')
+@app.route('/recommendations')
 @login_required
 def optimize():
-    return render_template('optimize.html')
+    # Load and prepare data
+    df = pd.read_csv('stock_features.csv')
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.replace([np.inf, -np.inf], np.nan)
+    df = df.dropna()
+    
+    feature_cols = [
+        'momentum', 'volatility', 'avg_correlation', 'max_correlation',
+        'min_correlation', 'market_correlation', 'sharpe', 'momentum_accel',
+        'dividend_yield'
+    ]
+    
+    # Train model
+    model = CatBoostClassifier(
+        iterations=200,
+        depth=4,
+        learning_rate=0.05,
+        random_state=42,
+        verbose=False
+    )
+    model.fit(df[feature_cols], df['beat_market'])
+    
+    # Get latest data
+    latest_date = df['date'].max()
+    latest = df[df['date'] == latest_date].copy()
+    latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
+    
+    # Get top recommendations
+    top_picks = latest[latest['prob_beat_market'] >= 0.5].sort_values(
+        'prob_beat_market', ascending=False
+    ).head(20)
+    
+    # Convert to list of dicts for template
+    recommendations = top_picks[[
+        'ticker', 'prob_beat_market', 'dividend_yield', 'momentum', 'volatility'
+    ]].to_dict('records')
+    
+    # Summary stats
+    stats = {
+        'total_analyzed': len(latest),
+        'above_50': len(latest[latest['prob_beat_market'] > 0.5]),
+        'above_55': len(latest[latest['prob_beat_market'] > 0.55]),
+        'above_60': len(latest[latest['prob_beat_market'] > 0.6]),
+        'avg_prob': latest['prob_beat_market'].mean() * 100,
+        'max_prob': latest['prob_beat_market'].max() * 100,
+        'last_updated': latest_date.strftime('%Y-%m-%d')
+    }
+    
+    return render_template('recommend.html', recommendations=recommendations, stats=stats)
 
 @app.route('/delete-file/<int:file_id>', methods=['DELETE'])
 @login_required

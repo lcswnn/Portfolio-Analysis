@@ -96,6 +96,7 @@ const animateCounter = (element, targetValue, duration = 3000) => {
   element.setAttribute('data-animated', 'true');
   const startValue = 0;
   const startTime = Date.now();
+  const format = element.getAttribute('data-format') || 'percent'; // Default to percent for backward compatibility
 
   const updateCounter = () => {
     const currentTime = Date.now();
@@ -103,8 +104,12 @@ const animateCounter = (element, targetValue, duration = 3000) => {
     const progress = Math.min(elapsed / duration, 1);
     const currentValue = startValue + (targetValue - startValue) * progress;
 
-    // Update the text content directly
-    element.textContent = currentValue.toFixed(1) + '%';
+    // Format based on data-format attribute
+    if (format === 'percent') {
+      element.textContent = currentValue.toFixed(1) + '%';
+    } else if (format === 'number') {
+      element.textContent = Math.round(currentValue);
+    }
 
     if (progress < 1) {
       requestAnimationFrame(updateCounter);
@@ -136,7 +141,7 @@ const counterParentObserver = new IntersectionObserver((entries) => {
 });
 
 // Observe parent containers that have counters
-const counterContainers = document.querySelectorAll('[id*="port-health"], .port-stats-example');
+const counterContainers = document.querySelectorAll('[id*="port-health"], .port-stats-example, .stats-grid');
 counterContainers.forEach(container => {
   counterParentObserver.observe(container);
 });
