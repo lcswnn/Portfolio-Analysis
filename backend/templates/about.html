@@ -39,52 +39,91 @@
     <!-- What is OptiFinance Section -->
     <section class="about-section">
       <h2 class="section-title">What is OptiFinance?</h2>
-      <p>OptiFinance is an intelligent portfolio analysis and recommendation platform powered by advanced machine learning algorithms. We help investors make data-driven decisions by analyzing your portfolio and providing actionable trading recommendations.</p>
-      <p>Our system evaluates your stocks and provides three key insights: <strong>Risk Assessment</strong>, <strong>Portfolio Health</strong>, and <strong>Trading Recommendations</strong> (Buy, Hold, or Sell signals).</p>
+      <p>OptiFinance is an intelligent portfolio analysis and recommendation platform powered by the CatBoost machine learning algorithm.
+        We help investors make data-driven decisions by analyzing 1500+ large, mid, and small cap stocks from major ETFs (SPY, MDY, SPSM) to create evidence-based trading recommendations.
+        OptiFinance is NOT a financial advisor. It analyzes the stock market using historical data and machine learning to provide probability-based predictions. </p> <br>
+      <p>Our system evaluates stocks and provides eight key insights: <strong>Probability of beating the market</strong>,
+        <strong>Sharpe Ratio (risk-adjusted returns)</strong>, <strong>Momentum based on the last 6 months</strong>, <strong>Momentum Acceleration (trend strength)</strong>,
+        <strong>Volatility (price swing range)</strong>, <strong>Dividend yield</strong>, <strong>Average Correlation with other picks</strong>, and <strong>Market Correlation</strong>.</p>
     </section>
 
     <!-- Key Features Section -->
     <section class="about-section">
-      <h2 class="section-title">Key Features</h2>
+      <h2 class="section-title">Key Metrics Explained</h2>
       <div class="features-grid">
         <div class="feature-card">
-          <h3 class="feature-title">Risk Analysis</h3>
-          <p>Comprehensive risk assessment of individual stocks and your entire portfolio using volatility analysis, correlation metrics, and drawdown calculations.</p>
+          <h3 class="feature-title">Probability %</h3>
+          <p>The CatBoost model's prediction of how likely the stock is to outperform the equal-weighted market average over the next 3 months. Higher = better chance of beating the market.</p>
         </div>
         <div class="feature-card">
-          <h3 class="feature-title">Portfolio Health Score</h3>
-          <p>Get a holistic health score that considers diversification, sector exposure, concentration risk, and overall portfolio balance.</p>
+          <h3 class="feature-title">Sharpe Ratio</h3>
+          <p>Risk-adjusted return metric showing how much return you earn per unit of risk taken. Higher Sharpe ratios indicate better quality returns relative to volatility.</p>
         </div>
         <div class="feature-card">
-          <h3 class="feature-title">Trading Signals</h3>
-          <p>Receive intelligent Buy, Hold, or Sell recommendations for each position based on technical analysis and ML-driven price prediction models.</p>
+          <h3 class="feature-title">Momentum %</h3>
+          <p>The stock's 6-month return expressed as a percentage. Positive (green) means the stock is up, negative (red) means it's down over the past 6 months.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Momentum Accel %</h3>
+          <p>Acceleration of the momentum trend - shows if momentum is speeding up (positive/green) or slowing down (negative/red). Indicates trend strength changes.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Volatility %</h3>
+          <p>Annualized standard deviation of daily returns. How much the stock's price typically swings up and down. Lower volatility = more stable, predictable price movement.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Dividend %</h3>
+          <p>Annual dividend yield showing how much cash income you receive per year as a percentage of the stock's price. Income per $100 invested annually.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Avg Correlation</h3>
+          <p>Average correlation with other recommended stocks in the list. Lower values = more diversified (moves independently from other picks). Good for portfolio diversification.</p>
+        </div>
+        <div class="feature-card">
+          <h3 class="feature-title">Market Correlation</h3>
+          <p>How much the stock moves with the overall market. Lower = better diversification benefit, as it won't move in lockstep with broader market swings.</p>
         </div>
       </div>
     </section>
 
     <!-- How It Works Section -->
     <section class="about-section">
-      <h2 class="section-title">How It Works</h2>
+      <h2 class="section-title">How OptiFinance Works</h2>
       <div class="steps-container">
         <div class="step">
           <div class="step-number">1</div>
-          <h3>Data Collection</h3>
-          <p>Upload your portfolio holdings and we fetch historical price data and financial metrics for each stock.</p>
+          <h3>Stock Universe Selection</h3>
+          <p>We analyze 1500+ large, mid, and small cap stocks by scraping holdings from major ETFs (SPY, MDY, SPSM) using web scraping. This ensures we cover the most liquid, widely-owned stocks.</p>
         </div>
         <div class="step">
           <div class="step-number">2</div>
-          <h3>Feature Engineering</h3>
-          <p>Extract technical indicators (RSI, MACD, Bollinger Bands), fundamental metrics, and temporal features from the data.</p>
+          <h3>Historical Data Collection</h3>
+          <p>Download 5+ years of historical price data for each stock using the yfinance library. We calculate monthly snapshots with a 6-month rolling window to capture trend information.</p>
         </div>
         <div class="step">
           <div class="step-number">3</div>
-          <h3>ML Analysis</h3>
-          <p>Our models analyze patterns and calculate risk scores, health metrics, and price trend predictions.</p>
+          <h3>Feature Engineering</h3>
+          <p>Extract 9 key features: Momentum (6-month return), Volatility (annualized std dev), Sharpe Ratio, Momentum Acceleration, Dividend Yield, and correlation metrics (avg, max, min, market correlation).</p>
         </div>
         <div class="step">
           <div class="step-number">4</div>
+          <h3>Model Training</h3>
+          <p>Train a CatBoost classifier using historical data to predict if a stock will beat the market. The model learns patterns from 200 boosting iterations with 4-depth trees.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">5</div>
+          <h3>Probability Generation</h3>
+          <p>For the latest date in our dataset, run the trained model to generate a probability score (0-100%) for each stock beating the market in the next 3 months.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">6</div>
+          <h3>Portfolio Analysis</h3>
+          <p>Upload your portfolio CSV and we store your holdings in a secure, user-specific database. View animated graphs showing your portfolio timeline and holdings allocation by type.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">7</div>
           <h3>Recommendations</h3>
-          <p>Receive clear Buy, Hold, or Sell signals with confidence scores for each stock in your portfolio.</p>
+          <p>Receive the top 20 stocks with probability ≥ 50% of beating the market, sorted by likelihood. Each stock shows all 8 metrics to help you make informed decisions.</p>
         </div>
       </div>
     </section>
@@ -92,106 +131,124 @@
     <!-- Machine Learning Approach Section -->
     <section class="about-section">
       <h2 class="section-title">Our Machine Learning Approach</h2>
-      <p>OptiFinance uses a combination of supervised and unsupervised machine learning techniques to deliver insights:</p>
+      <p>OptiFinance uses a CatBoost gradient boosting classifier as its primary machine learning engine, chosen for its superior performance with categorical features and robust handling of market data:</p>
 
       <div class="ml-approach-grid">
         <div class="ml-card">
-          <h3>Risk Scoring Model</h3>
-          <p><strong>Type:</strong> Regression + Ensemble Methods</p>
-          <p>We train models on historical volatility, beta, drawdown, and correlation data to predict forward-looking risk scores (0-100 scale).</p>
-          <p><strong>Techniques:</strong> Random Forest, Gradient Boosting, Linear Regression</p>
+          <h3>Primary Model: CatBoost Classifier</h3>
+          <p><strong>Type:</strong> Binary Classification (Beat Market vs. Underperform)</p>
+          <p>Predicts whether a stock will outperform the equal-weighted market average over the next 3 months based on 9 engineered features.</p>
+          <p><strong>Architecture:</strong> 200 boosting iterations, depth 4 trees, 0.05 learning rate</p>
+          <p><strong>Why CatBoost?</strong> Handles numerical and categorical features naturally, prevents overfitting, provides reliable probability calibration</p>
         </div>
 
         <div class="ml-card">
-          <h3>Portfolio Health Index</h3>
-          <p><strong>Type:</strong> Multi-factor Scoring System</p>
-          <p>Combines Sharpe ratio, diversification index, sector balance, and concentration metrics into a comprehensive health score.</p>
-          <p><strong>Techniques:</strong> Weighted Feature Combination, Normalization, Anomaly Detection</p>
+          <h3>Feature Engineering Pipeline</h3>
+          <p><strong>Type:</strong> Time-series Feature Extraction</p>
+          <p>Calculates 9 quantitative metrics at monthly intervals using 6-month rolling windows from 5+ years of historical data:</p>
+          <p>• Momentum, Volatility, Sharpe Ratio, Momentum Acceleration<br>
+             • Dividend Yield, Average Correlation, Max/Min Correlation, Market Correlation</p>
+          <p><strong>Data Cleaning:</strong> Removes infinite values, NaN entries, stocks with insufficient data (&lt;250 data points)</p>
         </div>
 
         <div class="ml-card">
-          <h3>Trading Signal Generation</h3>
-          <p><strong>Type:</strong> Classification Model (3-class)</p>
-          <p>Predicts trading actions (Buy/Hold/Sell) using technical indicators and trend forecasting.</p>
-          <p><strong>Techniques:</strong> XGBoost, LSTM Neural Networks, Support Vector Machines</p>
+          <h3>Training Methodology</h3>
+          <p><strong>Type:</strong> Supervised Learning with Time-Series Split</p>
+          <p>Trains on 70% historical data (older dates), validates on 30% test set (recent dates) to simulate real-world deployment.</p>
+          <p><strong>Target Variable:</strong> Binary flag indicating if 3-month forward return beat the market average</p>
+          <p><strong>Validation:</strong> Tests model accuracy, precision, recall on unseen future data</p>
         </div>
 
         <div class="ml-card">
-          <h3>Price Prediction</h3>
-          <p><strong>Type:</strong> Time Series Forecasting</p>
-          <p>Forecasts short-term price movements to support trading recommendations.</p>
-          <p><strong>Techniques:</strong> ARIMA, LSTM RNNs, Prophet (Facebook's forecasting library)</p>
+          <h3>Ensemble Comparison</h3>
+          <p><strong>Type:</strong> Multi-Model Validation</p>
+          <p>We tested multiple ML algorithms to ensure CatBoost selection: XGBoost, LightGBM, LSTM Neural Networks, and Ensemble voting classifiers.</p>
+          <p><strong>Result:</strong> CatBoost provided optimal balance of accuracy, interpretability, and prediction calibration</p>
+        </div>
+
+        <div class="ml-card">
+          <h3>Correlation-Based Diversification</h3>
+          <p><strong>Type:</strong> Portfolio Optimization</p>
+          <p>Builds correlation matrix from 6-month momentum data to identify stock relationships. Recommends diversified portfolios by limiting correlations between picks.</p>
+          <p><strong>Benefit:</strong> Ensures recommended stocks move somewhat independently, reducing portfolio risk</p>
+        </div>
+
+        <div class="ml-card">
+          <h3>Probability Scoring</h3>
+          <p><strong>Type:</strong> Calibrated Probability Estimation</p>
+          <p>Generates probability scores (0-100%) for each stock beating the market. Filters to stocks with ≥50% probability for recommendations.</p>
+          <p><strong>Advantage:</strong> Investors see confidence scores, not just binary buy/sell signals</p>
         </div>
       </div>
     </section>
 
     <!-- Implementation Roadmap Section -->
     <section class="about-section">
-      <h2 class="section-title">Implementation Roadmap</h2>
+      <h2 class="section-title">Current Implementation Status</h2>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 1: Data & Feature Engineering</h3>
+        <h3 class="phase-title">✓ Phase 1: Data Pipeline & Stock Universe (COMPLETE)</h3>
         <ul class="implementation-list">
-          <li>Set up data pipeline to fetch historical OHLCV (Open, High, Low, Close, Volume) data</li>
-          <li>Calculate technical indicators: RSI, MACD, Bollinger Bands, ATR, Moving Averages</li>
-          <li>Extract fundamental metrics: P/E ratio, market cap, dividend yield</li>
-          <li>Normalize and scale features for model input</li>
-          <li>Handle missing data and outliers</li>
+          <li>Web scraping pipeline to extract 1500+ stocks from ETF holdings (SPY, MDY, SPSM)</li>
+          <li>yfinance integration to download 5+ years of historical price data</li>
+          <li>Batch processing with rate limiting and retry logic</li>
+          <li>Data validation and filtering (remove incomplete data &lt;250 points)</li>
+          <li>Store all features in stock_features.csv (75,720+ rows)</li>
         </ul>
       </div>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 2: Risk Model Development</h3>
+        <h3 class="phase-title">✓ Phase 2: Feature Engineering (COMPLETE)</h3>
         <ul class="implementation-list">
-          <li>Collect historical returns data (1-5 years minimum)</li>
-          <li>Calculate volatility, beta, Value at Risk (VaR), and maximum drawdown</li>
-          <li>Train regression model to predict risk scores</li>
-          <li>Use Random Forest/Gradient Boosting for non-linear relationships</li>
-          <li>Validate using backtesting and correlation analysis</li>
+          <li>Calculate 9 key metrics: Momentum, Volatility, Sharpe Ratio, Momentum Acceleration</li>
+          <li>Correlation analysis: Average, Max, Min, and Market Correlation</li>
+          <li>Dividend yield extraction from financial data</li>
+          <li>Monthly snapshots with 6-month rolling windows</li>
+          <li>Data normalization and outlier handling (remove inf/-inf values, NaN)</li>
         </ul>
       </div>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 3: Portfolio Health Scoring</h3>
+        <h3 class="phase-title">✓ Phase 3: CatBoost Model Training (COMPLETE)</h3>
         <ul class="implementation-list">
-          <li>Calculate correlation matrix between stocks to assess diversification</li>
-          <li>Compute Herfindahl index for concentration risk</li>
-          <li>Analyze sector/industry exposure balance</li>
-          <li>Build composite health score combining multiple factors with weighted averaging</li>
-          <li>Flag unhealthy patterns (over-concentration, high correlation)</li>
+          <li>CatBoost classifier with 200 iterations, depth 4, learning rate 0.05</li>
+          <li>Binary classification: Beat Market vs. Underperform</li>
+          <li>70/30 time-series train/test split</li>
+          <li>Model validation with accuracy, precision, recall metrics</li>
+          <li>Probability calibration for reliable confidence scores</li>
         </ul>
       </div>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 4: Trading Signal Model</h3>
+        <h3 class="phase-title">✓ Phase 4: Recommendation Generation (COMPLETE)</h3>
         <ul class="implementation-list">
-          <li>Create labeled training data with historical Buy/Hold/Sell signals</li>
-          <li>Engineer features: momentum indicators, trend strength, volatility regime</li>
-          <li>Train multi-class classifier using XGBoost or neural networks</li>
-          <li>Calculate confidence scores (probability estimates) for each signal</li>
-          <li>Validate with walk-forward testing on historical data</li>
+          <li>Generate probability predictions for all stocks in latest dataset</li>
+          <li>Filter for stocks with ≥50% probability of beating market</li>
+          <li>Sort recommendations by probability (highest first)</li>
+          <li>Return top 20 picks with all 8 metrics displayed</li>
+          <li>Correlation-based diversification filtering</li>
         </ul>
       </div>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 5: Time Series Forecasting</h3>
+        <h3 class="phase-title">✓ Phase 5: Multi-User Portfolio Analysis (COMPLETE)</h3>
         <ul class="implementation-list">
-          <li>Build LSTM neural network for 30-90 day price predictions</li>
-          <li>Use ensemble approach combining multiple forecasting methods</li>
-          <li>Implement confidence intervals for predictions</li>
-          <li>Validate forecasts using MAE, RMSE, and directional accuracy</li>
-          <li>Feed predictions into trading signal model</li>
+          <li>User registration and secure authentication (Bcrypt hashing)</li>
+          <li>CSV portfolio upload with automatic date extraction</li>
+          <li>Multi-user data isolation via user_id foreign keys</li>
+          <li>Animated portfolio timeline graph (Plotly with CSS animation)</li>
+          <li>Holdings allocation pie chart by security type</li>
         </ul>
       </div>
 
       <div class="roadmap-phase">
-        <h3 class="phase-title">Phase 6: Integration & Deployment</h3>
+        <h3 class="phase-title">→ Phase 6: Future Enhancements (IN PROGRESS)</h3>
         <ul class="implementation-list">
-          <li>Create unified API to serve all models</li>
-          <li>Implement real-time prediction pipeline</li>
-          <li>Build dashboard to display risk, health, and trading signals</li>
-          <li>Set up continuous retraining with new data</li>
-          <li>Monitor model performance and drift detection</li>
+          <li>Enhanced price forecasting with time-series models (ARIMA, Prophet)</li>
+          <li>Real-time data updates for stock features</li>
+          <li>Advanced portfolio optimization suggestions</li>
+          <li>Sector and industry analysis</li>
+          <li>Risk assessment and Value at Risk (VaR) calculations</li>
         </ul>
       </div>
     </section>
@@ -201,25 +258,31 @@
       <h2 class="section-title">Technology Stack</h2>
       <div class="tech-stack-grid">
         <div class="tech-item">
-          <strong>Data Processing:</strong> Pandas, NumPy, Polars
+          <strong>Backend Framework:</strong> Flask (Python web framework)
         </div>
         <div class="tech-item">
-          <strong>ML Frameworks:</strong> Scikit-learn, XGBoost, TensorFlow/Keras, PyTorch
+          <strong>Database:</strong> SQLite3 with SQLAlchemy ORM
         </div>
         <div class="tech-item">
-          <strong>Time Series:</strong> LSTM, Prophet, Statsmodels
+          <strong>Machine Learning:</strong> CatBoost (gradient boosting), comparison with XGBoost & LightGBM
         </div>
         <div class="tech-item">
-          <strong>Data Source:</strong> Yahoo Finance, Alpha Vantage, IEX Cloud
+          <strong>Data Processing:</strong> Pandas, NumPy for feature engineering and data cleaning
         </div>
         <div class="tech-item">
-          <strong>Backtesting:</strong> Backtrader, Zipline
+          <strong>Data Source:</strong> yfinance for historical price data, BeautifulSoup for web scraping
         </div>
         <div class="tech-item">
-          <strong>Deployment:</strong> Docker, Flask/FastAPI, Redis for caching
+          <strong>Visualization:</strong> Plotly for interactive graphs with CSS animations
         </div>
         <div class="tech-item">
-          <strong>Coding Languages:</strong>  Python, HTML, CSS, JavaScript
+          <strong>Authentication:</strong> Flask-Login, Flask-WTF, Flask-Bcrypt for secure user management
+        </div>
+        <div class="tech-item">
+          <strong>Frontend:</strong> HTML5 (Jinja2 templates), CSS3 (animations), JavaScript (interactivity)
+        </div>
+        <div class="tech-item">
+          <strong>Python Version:</strong> Python 3.13
         </div>
       </div>
     </section>

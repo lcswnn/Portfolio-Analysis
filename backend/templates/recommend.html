@@ -32,29 +32,29 @@
     </div>
 
     <div class="top-recommendation-container fadeInUp-animation2">
-      <div class="stats-grid">
-          <div class="stat-card">
-              <h3><span class="counter" data-target="{{ stats.total_analyzed }}" data-format="number"></span></h3>
-              <p>Stocks Analyzed</p>
-          </div>
-          <div class="stat-card">
-              <h3><span class="counter" data-target="{{ stats.max_prob }}" data-format="percent"></span></h3>
-              <p>Highest Probability</p>
-          </div>
-          <div class="stat-card">
-              <h3><span class="counter" data-target="{{ stats.above_55 }}" data-format="number"></span></h3>
-              <p>Above 55% Probability</p>
-          </div>
-          <div class="stat-card">
-              <h3><span class="counter" data-target="{{ stats.above_50 }}" data-format="number"></span></h3>
-              <p>Above 50% Probability</p>
-          </div>
-      </div>
-      <p class="last-updated">Last data from: {{ stats.last_updated }}</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.total_analyzed }}" data-format="number"></span></h3>
+                <p>Stocks Analyzed</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.max_prob }}" data-format="percent"></span></h3>
+                <p>Highest Probability</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.above_55 }}" data-format="number"></span></h3>
+                <p>Above 55% Probability</p>
+            </div>
+            <div class="stat-card">
+                <h3><span class="counter" data-target="{{ stats.above_50 }}" data-format="number"></span></h3>
+                <p>Above 50% Probability</p>
+            </div>
+        </div>
+        <p class="last-updated">Last data from: {{ stats.last_updated }}</p>
     </div>
     <div class="optimize-container fadeInUp-animation">
         <!-- Summary Stats -->
-        <p class="top-recommendations">CatBoost Model Recommendations:</p>
+        <p class="top-recommendations">Top 20 CatBoost Model Recommendations:</p>
 
         <!-- Recommendations Table -->
         <div class="table-container">
@@ -64,9 +64,13 @@
                         <th>Rank</th>
                         <th>Ticker</th>
                         <th>Probability %</th>
-                        <th>Dividend %</th>
+                        <th>Sharpe Ratio</th>
                         <th>Momentum %</th>
+                        <th>Momentum Accel %</th>
                         <th>Volatility %</th>
+                        <th>Dividend %</th>
+                        <th>Avg Correlation</th>
+                        <th>Market Correlation</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,11 +81,17 @@
                         <td class="{% if stock.prob_beat_market > 0.55 %}high-prob{% endif %}">
                             {{ "%.1f"|format(stock.prob_beat_market * 100) }}%
                         </td>
-                        <td>{{ "%.2f"|format(stock.dividend_yield * 100) }}%</td>
+                        <td>{{ "%.2f"|format(stock.sharpe) }}</td>
                         <td class="{% if stock.momentum > 0 %}positive{% else %}negative{% endif %}">
                             {{ "%.1f"|format(stock.momentum * 100) }}%
                         </td>
+                        <td class="{% if stock.momentum_accel > 0 %}positive{% else %}negative{% endif %}">
+                            {{ "%.1f"|format(stock.momentum_accel * 100) }}%
+                        </td>
                         <td>{{ "%.1f"|format(stock.volatility * 100) }}%</td>
+                        <td>{{ "%.2f"|format(stock.dividend_yield * 100) }}%</td>
+                        <td>{{ "%.1f"|format(stock.avg_correlation * 100) }}%</td>
+                        <td>{{ "%.1f"|format(stock.market_correlation * 100) }}%</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -93,9 +103,13 @@
             <h4>How to Read This Table:</h4>
             <ul>
                 <li><strong>Probability %:</strong> Chance of beating the market (higher = better)</li>
-                <li><strong>Dividend %:</strong> Annual dividend yield (income per $100 invested)</li>
+                <li><strong>Sharpe Ratio:</strong> Risk-adjusted returns - return earned per unit of risk (higher = better)</li>
                 <li><strong>Momentum %:</strong> Past 6-month return (green = up, red = down)</li>
+                <li><strong>Momentum Accel %:</strong> Acceleration of momentum - is the trend speeding up or slowing (green = accelerating, red = decelerating)</li>
                 <li><strong>Volatility %:</strong> Price swing range (lower = more stable)</li>
+                <li><strong>Dividend %:</strong> Annual dividend yield (income per $100 invested)</li>
+                <li><strong>Avg Correlation:</strong> Average correlation with other recommended stocks (lower = more diversified)</li>
+                <li><strong>Market Correlation:</strong> How much the stock moves with the overall market (lower = better diversification benefit)</li>
             </ul>
         </div>
     </div>

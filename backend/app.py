@@ -270,7 +270,7 @@ def portfolio():
 @login_required
 def optimize():
     # Load and prepare data
-    df = pd.read_csv('stock_features.csv')
+    df = pd.read_csv('../backend/stock_features.csv')
     df['date'] = pd.to_datetime(df['date'])
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
@@ -303,7 +303,7 @@ def optimize():
     
     # Convert to list of dicts for template
     recommendations = top_picks[[
-        'ticker', 'prob_beat_market', 'dividend_yield', 'momentum', 'volatility'
+        'ticker', 'prob_beat_market', 'sharpe', 'momentum', 'momentum_accel', 'volatility', 'dividend_yield', 'avg_correlation', 'market_correlation'
     ]].to_dict('records')
     
     # Summary stats

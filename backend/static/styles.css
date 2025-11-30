@@ -866,9 +866,10 @@ form input {
 /* Features Grid */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px;
-  margin: 40px 0;
+  margin: 40px auto;
+  max-width: 1200px;
 }
 
 .feature-card {
@@ -876,14 +877,8 @@ form input {
   padding: 30px;
   border-radius: 12px;
   border: 1px solid var(--dark-grey);
-  transition: all 0.4s ease-out;
   cursor: default;
-}
-
-.feature-card:hover {
-  border: 1px solid var(--white);
-  transform: scale(1.03);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  min-height: 280px;
 }
 
 .feature-title {
@@ -902,9 +897,10 @@ form input {
 /* Steps Container */
 .steps-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
-  margin: 40px 0;
+  margin: 40px auto;
+  max-width: 1200px;
 }
 
 .step {
@@ -915,15 +911,9 @@ form input {
   padding: 30px;
   background: linear-gradient(-45deg, rgba(79, 118, 246, 0.2), rgba(119, 242, 161, 0.1));
   border-radius: 12px;
-  transition: all 0.3s ease-out;
   cursor: default;
   border: 1px solid var(--dark-grey);
-}
-
-.step:hover {
-  transform: scale(1.03);
-  border: 1px solid var(--white);
-  box-shadow: 0 15px 40px rgba(119, 242, 161, 0.2);
+  min-height: 320px;
 }
 
 .step-number {
@@ -955,9 +945,10 @@ form input {
 /* ML Approach Grid */
 .ml-approach-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
-  margin: 40px 0;
+  margin: 40px auto;
+  max-width: 1200px;
 }
 
 .ml-card {
@@ -965,13 +956,7 @@ form input {
   padding: 30px;
   border-radius: 12px;
   border: 1px solid var(--dark-grey);
-  transition: all 0.3s ease-out;
-}
-
-.ml-card:hover {
-  transform: scale(1.03);
-  border-color: var(--white);
-  box-shadow: 0 15px 40px rgba(119, 242, 161, 0.2);
+  min-height: 300px;
 }
 
 .ml-card h3 {
@@ -992,14 +977,7 @@ form input {
   padding: 30px;
   margin: 25px 0;
   border-radius: 10px;
-  transition: all 0.3s ease-out;
   border: 2px solid var(--dark-grey);
-}
-
-.roadmap-phase:hover {
-  background-color: rgba(212, 212, 212, 0.15);
-  transform: scale(1.03);
-  border: 2px solid var(--white);
 }
 
 .phase-title {
@@ -1036,9 +1014,10 @@ form input {
 /* Tech Stack Grid */
 .tech-stack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin: 40px 0;
+  margin: 40px auto;
+  max-width: 1200px;
 }
 
 .tech-item {
@@ -1048,13 +1027,8 @@ form input {
   border: 2px solid var(--dark-grey);
   color: var(--white);
   font-size: 1.4rem;
-  transition: all 0.3s ease-out;
   line-height: 1.8;
-}
-
-.tech-item:hover {
-  border-color: var(--white);
-  transform: scale(1.03);
+  min-height: 120px;
 }
 
 .tech-item strong {
@@ -1137,7 +1111,7 @@ form input {
 
 .recommendations-table th {
     padding: 15px;
-    text-align: left;
+    text-align: center;
     color: var(--white);
     font-weight: 600;
     border-bottom: 2px solid var(--dark-grey);
@@ -1147,6 +1121,7 @@ form input {
     padding: 12px 15px;
     border-bottom: 1px solid var(--black);
     color: var(--white);
+    text-align: center;
 }
 
 .recommendations-table tbody tr:hover {
@@ -1207,6 +1182,15 @@ form input {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .features-grid,
+  .ml-approach-grid,
+  .steps-container,
+  .tech-stack-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .section-title {
     font-size: 2.5rem;
@@ -1223,7 +1207,8 @@ form input {
 
   .features-grid,
   .ml-approach-grid,
-  .steps-container {
+  .steps-container,
+  .tech-stack-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }

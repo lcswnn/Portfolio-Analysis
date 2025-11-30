@@ -1,16 +1,14 @@
 import pandas as pd
 import numpy as np
 from catboost import CatBoostClassifier
-import yfinance as yf
 
-# Load and clean data
+# Load features
 df = pd.read_csv('../backend/stock_features.csv')
 df['date'] = pd.to_datetime(df['date'])
 df = df.replace([np.inf, -np.inf], np.nan)
 df = df.dropna()
 
 print(f"Loaded {len(df)} samples")
-print(f"Date range: {df['date'].min()} to {df['date'].max()}")
 
 feature_cols = [
     'momentum', 'volatility', 'avg_correlation', 'max_correlation',
@@ -18,7 +16,28 @@ feature_cols = [
     'dividend_yield'
 ]
 
-# Train CatBoost on all data
+# Build correlation matrix from the features data
+# Pivot to get tickers as columns, dates as rows, using avg_correlation as proxy
+# Or better: build correlation from the feature vectors themselves
+
+def build_correlation_matrix(df):
+    """
+    Build a correlation matrix between stocks based on their feature profiles over time.
+    Stocks with similar feature movements are considered correlated.
+    """
+    # Pivot: rows = dates, columns = tickers, values = momentum (price movement proxy)
+    pivot = df.pivot_table(index='date', columns='ticker', values='momentum', aggfunc='first')
+    
+    # Calculate correlation between stocks based on how their momentum moves together
+    corr_matrix = pivot.corr()
+    
+    return corr_matrix
+
+print("Building correlation matrix...")
+corr_matrix = build_correlation_matrix(df)
+print(f"Correlation matrix shape: {corr_matrix.shape}")
+
+# Train model
 print("\nTraining CatBoost model...")
 model = CatBoostClassifier(
     iterations=200,
@@ -30,113 +49,160 @@ model = CatBoostClassifier(
 model.fit(df[feature_cols], df['beat_market'])
 print("Model trained!")
 
-# Get most recent data for each stock
+# Get latest data
 latest_date = df['date'].max()
 latest = df[df['date'] == latest_date].copy()
-print(f"\nAnalyzing {len(latest)} stocks from {latest_date.strftime('%Y-%m-%d')}")
-
-# Predict probability of beating market
 latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
+print(f"Analyzing {len(latest)} stocks from {latest_date.strftime('%Y-%m-%d')}")
+
+
+def get_diversified_recommendations(df, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=20):
+    """Get high-probability stocks that are uncorrelated with each other."""
+    candidates = df[df['prob_beat_market'] >= min_prob].sort_values(
+        'prob_beat_market', ascending=False
+    ).copy()
+    
+    if len(candidates) == 0:
+        return pd.DataFrame()
+    
+    selected = [candidates.iloc[0]['ticker']]
+    
+    for _, row in candidates.iterrows():
+        ticker = row['ticker']
+        
+        if ticker in selected:
+            continue
+        
+        if len(selected) >= top_n:
+            break
+        
+        # Check correlation with all already-selected stocks
+        is_uncorrelated = True
+        for selected_ticker in selected:
+            if ticker in corr_matrix.columns and selected_ticker in corr_matrix.columns:
+                correlation = abs(corr_matrix.loc[ticker, selected_ticker])
+                if correlation > max_correlation:
+                    is_uncorrelated = False
+                    break
+            # If ticker not in matrix, allow it (no data to reject it)
+        
+        if is_uncorrelated:
+            selected.append(ticker)
+    
+    result = candidates[candidates['ticker'].isin(selected)].copy()
+    
+    # Calculate average correlation with other picks
+    avg_corrs = []
+    for ticker in result['ticker']:
+        other_tickers = [t for t in selected if t != ticker]
+        if other_tickers and ticker in corr_matrix.columns:
+            corrs = [abs(corr_matrix.loc[ticker, t]) for t in other_tickers if t in corr_matrix.columns]
+            avg_corrs.append(np.mean(corrs) if corrs else 0)
+        else:
+            avg_corrs.append(0)
+    
+    result['avg_corr_with_picks'] = avg_corrs
+    
+    return result.sort_values('prob_beat_market', ascending=False)
 
 
 def get_recommendations(df, min_prob=0.5, min_dividend=0.0, max_volatility=1.0, top_n=20):
-    """
-    Filter and rank stocks based on criteria.
-    
-    Parameters:
-    - min_prob: Minimum probability of beating market (0.5 = 50%)
-    - min_dividend: Minimum dividend yield (0.02 = 2%)
-    - max_volatility: Maximum annualized volatility (0.4 = 40%)
-    - top_n: Number of stocks to return
-    """
+    """Get recommendations without diversification filter."""
     filtered = df[
         (df['prob_beat_market'] >= min_prob) &
         (df['dividend_yield'] >= min_dividend) &
         (df['volatility'] <= max_volatility)
     ].copy()
     
-    # Sort by probability
     filtered = filtered.sort_values('prob_beat_market', ascending=False)
-    
     return filtered.head(top_n)
 
 
-def fetch_current_prices(tickers):
-    """Fetch current prices for tickers."""
-    prices = {}
-    for ticker in tickers:
-        try:
-            stock = yf.Ticker(ticker)
-            prices[ticker] = stock.info.get('currentPrice', stock.info.get('regularMarketPrice', None))
-        except:
-            prices[ticker] = None
-    return prices
-
-
-def print_recommendations(recs, title="Stock Recommendations"):
+def print_recommendations(recs, title="Recommendations", show_corr=False):
     """Pretty print recommendations."""
-    print("\n" + "="*80)
+    print("\n" + "="*90)
     print(title)
-    print("="*80)
-    print(f"{'Rank':<5} {'Ticker':<8} {'Prob%':<8} {'Dividend%':<10} {'Momentum':<10} {'Volatility':<10}")
-    print("-"*80)
+    print("="*90)
+    
+    if show_corr:
+        print(f"{'Rank':<5} {'Ticker':<8} {'Prob%':<8} {'Dividend%':<10} {'Momentum':<10} {'Volatility':<10} {'AvgCorr':<10}")
+    else:
+        print(f"{'Rank':<5} {'Ticker':<8} {'Prob%':<8} {'Dividend%':<10} {'Momentum':<10} {'Volatility':<10}")
+    print("-"*90)
     
     for i, (_, row) in enumerate(recs.iterrows(), 1):
-        print(f"{i:<5} {row['ticker']:<8} {row['prob_beat_market']*100:<8.1f} "
-              f"{row['dividend_yield']*100:<10.2f} {row['momentum']*100:<10.1f} "
-              f"{row['volatility']*100:<10.1f}")
+        base = (f"{i:<5} {row['ticker']:<8} {row['prob_beat_market']*100:<8.1f} "
+                f"{row['dividend_yield']*100:<10.2f} {row['momentum']*100:<10.1f} "
+                f"{row['volatility']*100:<10.1f}")
+        
+        if show_corr and 'avg_corr_with_picks' in row:
+            print(f"{base} {row['avg_corr_with_picks']:<10.2f}")
+        else:
+            print(base)
 
 
 # ==================== Generate Recommendations ====================
 
-# 1. Top picks overall (highest probability)
+# 1. Standard picks (NOT diversified)
 print_recommendations(
     get_recommendations(latest, min_prob=0.5, top_n=20),
-    "TOP 20 STOCKS - Highest Probability of Beating Market"
+    "TOP 20 STOCKS - Highest Probability (NOT diversified)"
 )
 
-# 2. Dividend-focused picks (good dividends + likely to beat market)
+# 2. Diversified picks (max correlation 0.5)
 print_recommendations(
-    get_recommendations(latest, min_prob=0.5, min_dividend=0.02, top_n=15),
-    "TOP 15 DIVIDEND STOCKS (2%+ yield) - Likely to Beat Market"
+    get_diversified_recommendations(latest, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=20),
+    "TOP 20 DIVERSIFIED STOCKS - High Probability + Low Correlation (<0.5)",
+    show_corr=True
 )
 
-# 3. Conservative picks (lower volatility + likely to beat market)
+# 3. Highly diversified picks (max correlation 0.3)
 print_recommendations(
-    get_recommendations(latest, min_prob=0.5, max_volatility=0.3, top_n=15),
-    "TOP 15 LOW-VOLATILITY STOCKS - Conservative Picks"
+    get_diversified_recommendations(latest, corr_matrix, min_prob=0.5, max_correlation=0.3, top_n=15),
+    "TOP 15 HIGHLY DIVERSIFIED STOCKS - Very Low Correlation (<0.3)",
+    show_corr=True
 )
 
-# 4. High-conviction picks (highest probability + dividend)
+# 4. Diversified dividend picks
+diversified_div = get_diversified_recommendations(latest, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=50)
+diversified_div = diversified_div[diversified_div['dividend_yield'] >= 0.02].head(15)
 print_recommendations(
-    get_recommendations(latest, min_prob=0.55, min_dividend=0.01, top_n=10),
-    "TOP 10 HIGH-CONVICTION PICKS (55%+ prob, 1%+ dividend)"
+    diversified_div,
+    "TOP 15 DIVERSIFIED DIVIDEND STOCKS (2%+ yield, <0.5 correlation)",
+    show_corr=True
 )
 
-# ==================== Summary Stats ====================
-print("\n" + "="*80)
-print("SUMMARY STATISTICS")
-print("="*80)
+
+# ==================== Summary ====================
+print("\n" + "="*90)
+print("SUMMARY")
+print("="*90)
 print(f"Total stocks analyzed: {len(latest)}")
 print(f"Stocks with >50% probability: {len(latest[latest['prob_beat_market'] > 0.5])}")
 print(f"Stocks with >55% probability: {len(latest[latest['prob_beat_market'] > 0.55])}")
-print(f"Stocks with >60% probability: {len(latest[latest['prob_beat_market'] > 0.6])}")
 
-print(f"\nAverage probability: {latest['prob_beat_market'].mean()*100:.1f}%")
-print(f"Max probability: {latest['prob_beat_market'].max()*100:.1f}%")
-print(f"Min probability: {latest['prob_beat_market'].min()*100:.1f}%")
 
-# ==================== Export to CSV ====================
-# Export all predictions
-latest_export = latest[['ticker', 'prob_beat_market', 'dividend_yield', 'momentum', 
-                        'volatility', 'sharpe', 'avg_correlation']].copy()
-latest_export = latest_export.sort_values('prob_beat_market', ascending=False)
-latest_export.to_csv('all_stock_predictions.csv', index=False)
-print(f"\nExported all predictions to 'all_stock_predictions.csv'")
+# ==================== Show Correlation of Top Picks ====================
+print("\n" + "="*90)
+print("CORRELATION MATRIX OF TOP 10 DIVERSIFIED PICKS")
+print("="*90)
 
-# Export top picks
-top_picks = get_recommendations(latest, min_prob=0.5, top_n=50)
-top_picks[['ticker', 'prob_beat_market', 'dividend_yield', 'momentum', 'volatility']].to_csv(
-    'top_stock_picks.csv', index=False
+top_diversified = get_diversified_recommendations(latest, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=10)
+pick_tickers = top_diversified['ticker'].tolist()
+
+# Filter to tickers that exist in correlation matrix
+valid_tickers = [t for t in pick_tickers if t in corr_matrix.columns]
+if valid_tickers:
+    picks_corr = corr_matrix.loc[valid_tickers, valid_tickers]
+    print(picks_corr.round(2).to_string())
+else:
+    print("No valid tickers found in correlation matrix")
+
+
+# ==================== Export ====================
+# Export diversified recommendations
+diversified_export = get_diversified_recommendations(latest, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=50)
+diversified_export[['ticker', 'prob_beat_market', 'dividend_yield', 'momentum', 'volatility', 'avg_corr_with_picks']].to_csv(
+    'diversified_recommendations.csv', index=False
 )
-print("Exported top 50 picks to 'top_stock_picks.csv'")
+print(f"\nExported to 'diversified_recommendations.csv'")

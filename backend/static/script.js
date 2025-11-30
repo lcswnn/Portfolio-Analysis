@@ -283,27 +283,23 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const fileId = this.getAttribute('data-file-id');
             if (confirm('Are you sure you want to delete this file?')) {
-                deleteFile(fileId, this);
+                deleteFile(fileId);
             }
         });
     });
 });
 
-function deleteFile(fileId, buttonElement) {
+function deleteFile(fileId) {
     fetch(`/delete-file/${fileId}`, {
         method: 'DELETE'
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove the list item from the DOM
-            const listItem = buttonElement.closest('li');
-            listItem.style.opacity = '0';
-            listItem.style.transform = 'translateX(20px)';
+            // Reload the page to refresh the graphs with updated data
             setTimeout(() => {
-                listItem.remove();
-            }, 300);
-            alert('File deleted successfully');
+                location.reload();
+            }, 500);
         } else {
             alert(`Error deleting file: ${data.message}`);
         }
