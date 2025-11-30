@@ -23,10 +23,23 @@ APP_START_TIME = time.time()
 # Track if stock data regeneration is currently running
 REGENERATION_IN_PROGRESS = False
 
-# Use single portfolio.db for all data
-portfolio_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
+# Database configuration
+# For production (Render), use PostgreSQL via environment variables
+# For local development, falls back to SQLite if DB_HOST is not set
+if os.getenv('DB_HOST'):
+    # PostgreSQL configuration (for Render)
+    db_host = os.getenv('DB_HOST')
+    db_port = os.getenv('DB_PORT', '5432')
+    db_user = os.getenv('DB_USER', 'postgres')
+    db_password = os.getenv('DB_PASSWORD', '')
+    db_name = os.getenv('DB_NAME', 'portfolio')
+    portfolio_db_uri = f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+else:
+    # SQLite configuration (for local development)
+    portfolio_db_uri = 'sqlite:////Users/lucaswaunn/projects/Portfolio-Analysis/backend/data/portfolio.db'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = portfolio_db_uri
-app.config['SECRET_KEY'] = 'secretkey'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'secretkey')
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
