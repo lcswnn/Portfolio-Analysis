@@ -218,49 +218,54 @@ def create_animated_timeline_graph(user_id=None):
 def get_holdings_by_type(user_id=None):
     """Fetch holdings aggregated by Security_Type over time from database, filtered by user if provided"""
     from .models import db, Position
-    from sqlalchemy import func
 
     # Query to get market value by security type for each date, optionally filtered by user
     if user_id:
         positions = db.session.query(
             Position.Date,
             Position.Security_Type,
-            func.sum(Position.Mkt_Val).label('total_value')
+            Position.Mkt_Val
         ).filter(
             Position.Symbol != 'Account Total',
             Position.Security_Type.isnot(None),
             Position.Security_Type != '',
-            Position.user_id == user_id
-        ).group_by(Position.Date, Position.Security_Type).order_by(Position.Date, Position.Security_Type).all()
+            Position.user_id == user_id,
+            Position.Mkt_Val.isnot(None)
+        ).order_by(Position.Date, Position.Security_Type).all()
     else:
         positions = db.session.query(
             Position.Date,
             Position.Security_Type,
-            func.sum(Position.Mkt_Val).label('total_value')
+            Position.Mkt_Val
         ).filter(
             Position.Symbol != 'Account Total',
             Position.Security_Type.isnot(None),
-            Position.Security_Type != ''
-        ).group_by(Position.Date, Position.Security_Type).order_by(Position.Date, Position.Security_Type).all()
+            Position.Security_Type != '',
+            Position.Mkt_Val.isnot(None)
+        ).order_by(Position.Date, Position.Security_Type).all()
 
-    # Convert to dataframe
+    # Convert to dataframe and aggregate in Python
     if positions:
         data = []
         for pos in positions:
             try:
-                # Clean the total_value (sum of strings with $ and commas)
-                if isinstance(pos.total_value, str):
-                    cleaned_value = float(str(pos.total_value).replace('$', '').replace(',', ''))
-                else:
-                    cleaned_value = float(pos.total_value) if pos.total_value else 0
+                # Clean the Mkt_Val (remove $ and commas)
+                cleaned_value = float(str(pos.Mkt_Val).replace('$', '').replace(',', ''))
                 data.append({
                     'Date': pos.Date,
                     'Security_Type': pos.Security_Type,
-                    'total_value': cleaned_value
+                    'Mkt_Val': cleaned_value
                 })
             except (ValueError, TypeError):
                 continue
-        df = pd.DataFrame(data)
+
+        if data:
+            df = pd.DataFrame(data)
+            # Group by Date and Security_Type and sum the values
+            df = df.groupby(['Date', 'Security_Type'])['Mkt_Val'].sum().reset_index()
+            df.rename(columns={'Mkt_Val': 'total_value'}, inplace=True)
+        else:
+            df = pd.DataFrame(columns=['Date', 'Security_Type', 'total_value'])
     else:
         df = pd.DataFrame(columns=['Date', 'Security_Type', 'total_value'])
 
