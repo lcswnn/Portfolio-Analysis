@@ -85,6 +85,30 @@ ul {
   display: block;
 }
 
+/* Mobile menu backdrop overlay */
+@media (max-width: 768px) {
+  #nav-bar::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 999;
+    pointer-events: auto;
+  }
+
+  ul.active ~ #nav-bar::after,
+  #nav-bar.menu-open::after {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
 @media (max-width: 768px) {
   #hamburger-menu {
     display: flex;
@@ -98,11 +122,13 @@ ul {
     max-width: 80vw;
     height: 100vh;
     flex-direction: column;
-    background-color: rgba(31, 43, 55, 0.98);
+    background: linear-gradient(135deg, rgba(20, 30, 40, 0.95) 0%, rgba(30, 45, 60, 0.95) 100%);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     overflow-y: auto;
     padding-top: 60px;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
   }
 
   ul.active {
@@ -114,6 +140,16 @@ ul {
     padding: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     float: none;
+  }
+
+  ul li a {
+    color: #F9F9F9;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 500;
+  }
+
+  ul li a:hover {
+    color: var(--green);
   }
 }
 
