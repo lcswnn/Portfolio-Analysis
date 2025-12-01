@@ -47,16 +47,14 @@ html::before {
 #nav-bar {
   width: 100%;
   background-color: transparent;
-  padding: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
+  padding: 20px 0;
+  position: relative;
   margin: 0;
-  z-index: 1000;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  height: 60px;
+  height: auto;
+  min-height: 80px;
 }
 
 ul {
@@ -132,7 +130,6 @@ ul li {
 
 /* Desktop navbar - add background for navigation only on desktop */
 ul {
-  background-color: rgba(31, 43, 55, 0.7);
   border-radius: 8px;
   margin: 5px 10px;
 }
@@ -197,7 +194,7 @@ ul {
   color: var(--white);
   padding: 10px 0;
   text-align: center;
-  margin-top: 35px;
+  margin-top: 100px;
 }
 
 @keyframes fadeInUp {
@@ -571,7 +568,7 @@ p {
   color: var(--white);
   padding: 10px 0;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 40px;
   font-size: 6rem;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
@@ -1252,7 +1249,7 @@ form input {
 .about-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px 20px;
 }
 
 .about-section {
