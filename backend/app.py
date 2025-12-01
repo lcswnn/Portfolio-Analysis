@@ -287,7 +287,8 @@ def portfolio():
 @login_required
 def optimize():
     # Load and prepare data
-    df = pd.read_csv('../backend/stock_features.csv')
+    csv_path = os.path.join(os.path.dirname(__file__), 'stock_features.csv')
+    df = pd.read_csv(csv_path)
     df['date'] = pd.to_datetime(df['date'])
     df = df.replace([np.inf, -np.inf], np.nan)
     df = df.dropna()
@@ -336,8 +337,10 @@ def optimize():
     
     return render_template('recommend.html', recommendations=recommendations, stats=stats)
 
-def get_recommendations_from_csv(csv_path='../backend/stock_features.csv'):
+def get_recommendations_from_csv(csv_path=None):
     """Helper function to load CSV and generate recommendations."""
+    if csv_path is None:
+        csv_path = os.path.join(os.path.dirname(__file__), 'stock_features.csv')
     df = pd.read_csv(csv_path)
     df['date'] = pd.to_datetime(df['date'])
     df = df.replace([np.inf, -np.inf], np.nan)
@@ -421,7 +424,8 @@ def regenerate_stock_data():
             try:
                 REGENERATION_IN_PROGRESS = True
                 # Generate new stock features
-                generate_stock_features('../backend/stock_features.csv')
+                csv_path = os.path.join(os.path.dirname(__file__), 'stock_features.csv')
+                generate_stock_features(csv_path)
                 print("Stock data regeneration complete!")
             except Exception as e:
                 print(f"Error in regeneration thread: {e}")
