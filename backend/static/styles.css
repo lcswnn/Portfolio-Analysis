@@ -46,6 +46,9 @@ html::before {
   top: 0;
   left: 0;
   z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 ul {
@@ -53,6 +56,64 @@ ul {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  display: flex;
+  width: 100%;
+}
+
+#hamburger-menu {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 15px 20px;
+  gap: 6px;
+}
+
+#hamburger-menu span {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+#hamburger-menu.active span:nth-child(1) {
+  transform: rotate(45deg) translate(10px, 10px);
+}
+
+#hamburger-menu.active span:nth-child(2) {
+  opacity: 0;
+}
+
+#hamburger-menu.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+@media (max-width: 768px) {
+  #hamburger-menu {
+    display: flex;
+  }
+
+  ul {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background-color: rgba(31, 43, 55, 0.95);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  ul.active {
+    max-height: 400px;
+  }
+
+  ul li {
+    text-align: left;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 ul li {
@@ -266,16 +327,36 @@ ul li {
   #line-chart {
     margin: 15px 0;
     padding: 0 8px;
+    width: 100%;
   }
 
   .graph-container {
     margin: 15px 0;
     padding: 0 8px;
     border-radius: 10px;
+    width: 100%;
+    overflow: hidden;
   }
 
   .graph-container #animated-timeline {
     height: 300px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  #line-chart {
+    margin: 10px 0;
+    padding: 0 5px;
+  }
+
+  .graph-container {
+    margin: 10px 0;
+    padding: 0 5px;
+  }
+
+  .graph-container #animated-timeline {
+    height: 250px;
   }
 }
 
@@ -370,6 +451,26 @@ ul li {
   text-decoration: none;
   transition: all 0.4s ease-out;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+@media (max-width: 768px) {
+  #button {
+    padding: 12px 18px;
+  }
+
+  #button a {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #button {
+    padding: 10px 15px;
+  }
+
+  #button a {
+    font-size: 1.2rem;
+  }
 }
 
 #button:hover {
@@ -473,6 +574,20 @@ p {
   padding: 25px 0 0 0;
 }
 
+@media (max-width: 768px) {
+  .log-in-container h2,
+  .sign-up-container h2 {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .log-in-container h2,
+  .sign-up-container h2 {
+    font-size: 1.4rem;
+  }
+}
+
 .log-in-container form,
 .sign-up-container form {
   display: flex;
@@ -552,6 +667,7 @@ p {
   flex-direction: column;
   align-items: center;
   max-width: 300px;
+  width: 100%;
 }
 
 .form-button-wrapper {
@@ -890,6 +1006,24 @@ form input {
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.profile-pie-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .profile-pie-container {
+    max-width: 100%;
+  }
+
+  .profile-pie-container svg {
+    max-width: 80vw;
+    height: auto;
+  }
 }
 
 .profile-container h2 {
@@ -1075,6 +1209,18 @@ form input {
   font-weight: 500;
   letter-spacing: 2px;
   color: #FFFFFF;  /* Pure white */
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
 }
 
 .about-section p {

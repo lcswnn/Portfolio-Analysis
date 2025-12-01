@@ -1,3 +1,33 @@
+// Hamburger menu toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const hamburgerMenu = document.getElementById('hamburger-menu');
+  const navList = document.querySelector('ul');
+
+  if (hamburgerMenu && navList) {
+    hamburgerMenu.addEventListener('click', function() {
+      hamburgerMenu.classList.toggle('active');
+      navList.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    const navLinks = navList.querySelectorAll('a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        hamburgerMenu.classList.remove('active');
+        navList.classList.remove('active');
+      });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('#navbar')) {
+        hamburgerMenu.classList.remove('active');
+        navList.classList.remove('active');
+      }
+    });
+  }
+});
+
 // Check regeneration status as early as possible
 function checkRegenerationStatusEarly() {
     const isRegenerating = localStorage.getItem('isRegeneratingStockData');
@@ -75,6 +105,11 @@ window.addEventListener('load', function() {
 const contentSections = document.querySelectorAll('#content-section-left, #content-section-right');
 
 if (contentSections.length > 0) {
+  // Responsive threshold based on screen size
+  const isMobile = window.innerWidth <= 768;
+  const threshold = isMobile ? 0.05 : 0.12;
+  const rootMargin = isMobile ? '0px 0px -20px 0px' : '0px 0px -50px 0px';
+
   // Create an Intersection Observer
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -86,8 +121,8 @@ if (contentSections.length > 0) {
       }
     });
   }, {
-    threshold: 0.12, // Trigger when 12% of the element is visible
-    rootMargin: '0px 0px -50px 0px' // Start slightly before it comes into view
+    threshold: threshold,
+    rootMargin: rootMargin
   });
 
   // Initially hide the content and start observing each section
@@ -100,6 +135,11 @@ if (contentSections.length > 0) {
 
 // Scroll-triggered animations for fadeInUp elements
 const animatedElements = document.querySelectorAll('.fadeInUp-animation, .fadeInUp-animation2, .fadeInUpLowOpacity2, .fadeInUpLowOpacity3, .fadeInUpLowOpacity4');
+
+// Responsive thresholds for animations
+const isMobileAnim = window.innerWidth <= 768;
+const animThreshold = isMobileAnim ? 0.05 : 0.1;
+const animRootMargin = isMobileAnim ? '0px 0px -10px 0px' : '0px 0px -30px 0px';
 
 const animationObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -124,8 +164,8 @@ const animationObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.1, // Trigger when 10% of the element is visible
-  rootMargin: '0px 0px -30px 0px' // Start animation slightly before element comes into view
+  threshold: animThreshold,
+  rootMargin: animRootMargin
 });
 
 // Observe all animated elements
@@ -135,6 +175,9 @@ animatedElements.forEach(element => {
 
 // Early trigger observer for roadmap - triggers much sooner with positive rootMargin
 const roadmapEarlyTrigger = document.querySelectorAll('.roadmap-early-trigger');
+const isMobileRoadmap = window.innerWidth <= 768;
+const roadmapRootMargin = isMobileRoadmap ? '100px 0px 0px 0px' : '200px 0px 0px 0px'; // Lower threshold on mobile
+
 const earlyTriggerObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -144,7 +187,7 @@ const earlyTriggerObserver = new IntersectionObserver((entries) => {
   });
 }, {
   threshold: 0.0,
-  rootMargin: '200px 0px 0px 0px' // Trigger when element is 200px below the viewport
+  rootMargin: roadmapRootMargin
 });
 
 // Observe roadmap elements
