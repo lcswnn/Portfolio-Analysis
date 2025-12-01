@@ -4,37 +4,46 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
-import sqlite3
+from sqlalchemy import text
 
 #set Plotly to render charts using the browser
 # pio.renderers.default = "browser"  # Commented out for server environments (Flask/Gunicorn)
 
 def get_portfolio_timeline_data(user_id=None):
     """Fetch portfolio total value over time from database, filtered by user if provided"""
-    conn = sqlite3.connect('data/portfolio.db')
+    from .models import db, Position
 
     # Query to get Account Total for each date
     # Also exclude "Unknown" dates
     if user_id:
-        query = """
-        SELECT Date,
-            CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT) as portfolio_value
-        FROM positions
-        WHERE Symbol = 'Account Total' AND user_id = ? AND Mkt_Val IS NOT NULL AND Date != 'Unknown' AND Date IS NOT NULL
-        ORDER BY Date
-        """
-        df = pd.read_sql_query(query, conn, params=(user_id,))
+        positions = db.session.query(Position.Date, Position.Mkt_Val).filter(
+            Position.Symbol == 'Account Total',
+            Position.user_id == user_id,
+            Position.Mkt_Val.isnot(None),
+            Position.Date != 'Unknown',
+            Position.Date.isnot(None)
+        ).order_by(Position.Date).all()
     else:
-        query = """
-        SELECT Date,
-            CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT) as portfolio_value
-        FROM positions
-        WHERE Symbol = 'Account Total' AND Mkt_Val IS NOT NULL AND Date != 'Unknown' AND Date IS NOT NULL
-        ORDER BY Date
-        """
-        df = pd.read_sql_query(query, conn)
+        positions = db.session.query(Position.Date, Position.Mkt_Val).filter(
+            Position.Symbol == 'Account Total',
+            Position.Mkt_Val.isnot(None),
+            Position.Date != 'Unknown',
+            Position.Date.isnot(None)
+        ).order_by(Position.Date).all()
 
-    conn.close()
+    # Convert to dataframe
+    if positions:
+        data = []
+        for pos in positions:
+            try:
+                # Clean the Mkt_Val string (remove $ and commas, convert to float)
+                cleaned_value = float(str(pos.Mkt_Val).replace('$', '').replace(',', ''))
+                data.append({'Date': pos.Date, 'portfolio_value': cleaned_value})
+            except (ValueError, TypeError):
+                continue
+        df = pd.DataFrame(data)
+    else:
+        df = pd.DataFrame(columns=['Date', 'portfolio_value'])
 
     # Return empty dataframe if no data
     if df.empty:
@@ -56,19 +65,25 @@ def get_portfolio_timeline_data(user_id=None):
 
 def get_FAKE_portfolio_timeline_data():
     """Fetch portfolio total value over time from database"""
-    conn = sqlite3.connect('data/portfolio.db')
+    from .models import db, Position
 
     # Query to get account total for each date
-    query = """
-    SELECT Date,
-        REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') as portfolio_value
-    FROM positions
-    WHERE Symbol = 'Account Total'
-    ORDER BY Date
-    """
+    positions = db.session.query(Position.Date, Position.Mkt_Val).filter(
+        Position.Symbol == 'Account Total'
+    ).order_by(Position.Date).all()
 
-    df = pd.read_sql_query(query, conn)
-    conn.close()
+    # Convert to dataframe
+    if positions:
+        data = []
+        for pos in positions:
+            try:
+                cleaned_value = float(str(pos.Mkt_Val).replace('$', '').replace(',', ''))
+                data.append({'Date': pos.Date, 'portfolio_value': cleaned_value})
+            except (ValueError, TypeError):
+                continue
+        df = pd.DataFrame(data)
+    else:
+        df = pd.DataFrame(columns=['Date', 'portfolio_value'])
 
     # Convert portfolio_value to numeric
     df['portfolio_value'] = pd.to_numeric(df['portfolio_value'])
@@ -202,33 +217,52 @@ def create_animated_timeline_graph(user_id=None):
 
 def get_holdings_by_type(user_id=None):
     """Fetch holdings aggregated by Security_Type over time from database, filtered by user if provided"""
-    conn = sqlite3.connect('data/portfolio.db')
+    from .models import db, Position
+    from sqlalchemy import func
 
     # Query to get market value by security type for each date, optionally filtered by user
     if user_id:
-        query = """
-        SELECT Date,
-            Security_Type,
-            SUM(CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT)) as total_value
-        FROM positions
-        WHERE Symbol != 'Account Total' AND Security_Type IS NOT NULL AND Security_Type != '' AND user_id = ?
-        GROUP BY Date, Security_Type
-        ORDER BY Date, Security_Type
-        """
-        df = pd.read_sql_query(query, conn, params=(user_id,))
+        positions = db.session.query(
+            Position.Date,
+            Position.Security_Type,
+            func.sum(Position.Mkt_Val).label('total_value')
+        ).filter(
+            Position.Symbol != 'Account Total',
+            Position.Security_Type.isnot(None),
+            Position.Security_Type != '',
+            Position.user_id == user_id
+        ).group_by(Position.Date, Position.Security_Type).order_by(Position.Date, Position.Security_Type).all()
     else:
-        query = """
-        SELECT Date,
-            Security_Type,
-            SUM(CAST(REPLACE(REPLACE(Mkt_Val, '$', ''), ',', '') AS FLOAT)) as total_value
-        FROM positions
-        WHERE Symbol != 'Account Total' AND Security_Type IS NOT NULL AND Security_Type != ''
-        GROUP BY Date, Security_Type
-        ORDER BY Date, Security_Type
-        """
-        df = pd.read_sql_query(query, conn)
+        positions = db.session.query(
+            Position.Date,
+            Position.Security_Type,
+            func.sum(Position.Mkt_Val).label('total_value')
+        ).filter(
+            Position.Symbol != 'Account Total',
+            Position.Security_Type.isnot(None),
+            Position.Security_Type != ''
+        ).group_by(Position.Date, Position.Security_Type).order_by(Position.Date, Position.Security_Type).all()
 
-    conn.close()
+    # Convert to dataframe
+    if positions:
+        data = []
+        for pos in positions:
+            try:
+                # Clean the total_value (sum of strings with $ and commas)
+                if isinstance(pos.total_value, str):
+                    cleaned_value = float(str(pos.total_value).replace('$', '').replace(',', ''))
+                else:
+                    cleaned_value = float(pos.total_value) if pos.total_value else 0
+                data.append({
+                    'Date': pos.Date,
+                    'Security_Type': pos.Security_Type,
+                    'total_value': cleaned_value
+                })
+            except (ValueError, TypeError):
+                continue
+        df = pd.DataFrame(data)
+    else:
+        df = pd.DataFrame(columns=['Date', 'Security_Type', 'total_value'])
 
     # Return empty dataframe if no data
     if df.empty:
