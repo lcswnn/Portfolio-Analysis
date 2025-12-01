@@ -66,6 +66,14 @@ ul li {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
+@media (max-width: 768px) {
+  ul li {
+    float: none;
+    padding: 12px 8px;
+    font-size: 1rem;
+  }
+}
+
 .hover-underline {
   display: block;
   color: white;
@@ -201,6 +209,33 @@ ul li {
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
 }
 
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 3.5rem;
+    letter-spacing: 2px;
+  }
+
+  .header h2 {
+    font-size: 1.2rem;
+    margin-top: 15px;
+    letter-spacing: 1px;
+  }
+
+  .header {
+    margin-top: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 2.5rem;
+  }
+
+  .header h2 {
+    font-size: 1rem;
+  }
+}
+
 #line-chart {
   display: inline-block;
   align-items: center;
@@ -210,6 +245,9 @@ ul li {
   border-radius: 10px;
   font-family: 'ClashDisplay', sans-serif;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
 }
 
 .graph-container {
@@ -220,6 +258,25 @@ ul li {
   animation-delay: 0.6s;
   opacity: 0;
   animation-fill-mode: forwards;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  #line-chart {
+    margin: 15px 0;
+    padding: 0 8px;
+  }
+
+  .graph-container {
+    margin: 15px 0;
+    padding: 0 8px;
+    border-radius: 10px;
+  }
+
+  .graph-container #animated-timeline {
+    height: 300px;
+  }
 }
 
 .profile-graph-container {
@@ -244,6 +301,7 @@ ul li {
   display: flex;
   align-items: center;
   gap: 30px;
+  flex-wrap: wrap;
 }
 
 .content.fade-in-visible {
@@ -258,6 +316,30 @@ ul li {
   border-radius: 15px;
   opacity: 0;
   transform: translateY(40px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  #content-section-left, #content-section-right {
+    margin: 30px auto;
+    padding: 15px;
+  }
+
+  #content-section-right h3,
+  #content-section-left h3 {
+    text-align: center;
+  }
+
+  #content-section-right p,
+  #content-section-left p {
+    text-align: center;
+  }
 }
 
 #content-section-right h3 {
@@ -314,16 +396,17 @@ p {
 }
 
 .stock-ticker-container {
-  overflow: hidden; 
-  white-space: nowrap; 
-  width: 100%; 
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
   padding: 10px 0;
   position: relative;
+  box-sizing: border-box;
 }
 
 .stock-ticker {
   display: inline-flex;
-  will-change: transform; 
+  will-change: transform;
 }
 
 .stock-ticker span {
@@ -333,6 +416,13 @@ p {
   font-size: 1.9rem;
   opacity: 0.4;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+@media (max-width: 768px) {
+  .stock-ticker span {
+    font-size: 1.3rem;
+    margin-right: 40px;
+  }
 }
 
 #secondary-header {
@@ -401,6 +491,58 @@ p {
   justify-content: center;
   width: 100%;
   padding: 0 30px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .log-in-container,
+  .sign-up-container {
+    min-width: 100%;
+    width: 90%;
+    max-width: 100%;
+    border-radius: 1.5rem;
+  }
+
+  .log-in-container h2,
+  .sign-up-container h2 {
+    font-size: 1.8rem;
+    padding: 20px 0 0 0;
+  }
+
+  .log-in-container form,
+  .sign-up-container form {
+    padding: 0 0 20px 0;
+  }
+
+  .form-columns {
+    gap: 20px;
+    padding: 0 15px;
+    flex-direction: column;
+  }
+
+  .form-left,
+  .form-right {
+    max-width: 100%;
+  }
+
+  .log-in-container input,
+  .sign-up-container input {
+    width: 90%;
+    font-size: 1.4rem;
+    padding: 12px;
+  }
+
+  .log-in-container label,
+  .sign-up-container label {
+    font-size: 1.4rem;
+    margin: 12px 0 5px 0;
+  }
+
+  .log-in-container button,
+  .sign-up-container button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+  }
 }
 
 .form-left,
@@ -536,6 +678,7 @@ form input {
   align-items: center;
   gap: 250px;
   margin-top: 0px;
+  flex-wrap: wrap;
 }
 
 .images #table {
@@ -560,6 +703,19 @@ form input {
   border-radius: 10px;
   opacity: 0;
   transform: translateY(60%);
+}
+
+@media (max-width: 768px) {
+  .images {
+    gap: 20px;
+    padding: 0 10px;
+  }
+
+  .images #table,
+  .images #pie-chart,
+  .images #bar-chart {
+    width: 100px;
+  }
 }
 
 .images #table.visible,
@@ -637,6 +793,21 @@ form input {
   max-width: 1400px;
   gap: 100px;
   margin: 0 auto;
+  flex-wrap: wrap;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .port-stats-container {
+    gap: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .port-stats-container {
+    gap: 30px;
+  }
 }
 
 #port-health-example h3 {
@@ -666,6 +837,8 @@ form input {
   display: flex;
   gap: 30px;
   align-items: stretch;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
 .profile-container,
@@ -680,6 +853,30 @@ form input {
   animation-fill-mode: forwards;
   margin: 0;
   min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .profile-first-container {
+    width: 100%;
+    flex-direction: column;
+    margin: 70px auto 30px;
+    padding: 0 10px;
+  }
+
+  .profile-container,
+  .profile-pie-container {
+    flex: 1 1 100%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .profile-container h2 {
+    font-size: 1.8rem;
+  }
+
+  .profile-container a {
+    font-size: 1.4rem;
+  }
 }
 
 .profile-container {
@@ -742,6 +939,30 @@ form input {
   animation-delay: 0.6s;
   opacity: 0;
   animation-fill-mode: forwards;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .file-container {
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .file-container h2 {
+    font-size: 1.8rem;
+  }
+
+  .file-container li {
+    font-size: 1.2rem;
+    padding: 8px 0;
+  }
+
+  .delete-file-btn {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
 }
 
 .file-container h2 {
@@ -1205,12 +1426,19 @@ form input {
     font-size: 1.3rem;
   }
 
+  .about-container {
+    padding: 20px 10px;
+  }
+
   .features-grid,
   .ml-approach-grid,
   .steps-container,
   .tech-stack-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+    max-width: 100%;
+    margin: 30px 10px;
+    padding: 0;
   }
 
   .step-number {
@@ -1228,6 +1456,56 @@ form input {
   .implementation-list li {
     font-size: 1.2rem;
     padding-left: 25px;
+  }
+
+  h3 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1.4rem;
+  }
+
+  .portfolio-container,
+  .optimize-container {
+    margin: 40px auto;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .about-section {
+    padding: 20px;
+    margin: 30px auto;
+  }
+
+  .about-section p {
+    font-size: 1.1rem;
+  }
+
+  .features-grid,
+  .ml-approach-grid,
+  .steps-container,
+  .tech-stack-grid {
+    margin: 20px 5px;
+    gap: 15px;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .port-stats-container {
+    gap: 40px;
+    flex-direction: column;
   }
 }
 
