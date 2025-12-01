@@ -23,6 +23,12 @@ html {
   background-attachment: fixed;
   height: 100vh;
   font-family: 'ClashDisplay', sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 html::before {
@@ -38,13 +44,14 @@ html::before {
   pointer-events: none;
 }
 
-#navbar {
-  width: 100%;
-  background-color: rgba(31, 43, 55, 0.8);
-  padding: 15px 0;
+#nav-bar {
+  width: 100vw;
+  background-color: rgba(31, 43, 55, 0.9);
+  padding: 12px 0;
   position: fixed;
   top: 0;
   left: 0;
+  margin: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
@@ -361,15 +368,40 @@ ul li {
 }
 
 .profile-graph-container {
-  max-width: 1400px;
-  margin: 60px auto;
-  padding: 30px;
+  width: 100%;
+  max-width: 100%;
+  margin: 60px 0;
+  padding: 30px 10px;
   background-color: rgba(212, 212, 212, 0.3);
   border-radius: 15px;
   animation: fadeInUp 1.5s ease-out;
   animation-delay: 0.6s;
   opacity: 0;
   animation-fill-mode: forwards;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.profile-graph-container svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .profile-graph-container {
+    margin: 40px 0;
+    padding: 15px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-graph-container {
+    margin: 30px 0;
+    padding: 10px 5px;
+  }
 }
 
 .graph-container #animated-timeline {
@@ -533,6 +565,22 @@ p {
   margin-top: 20px;
   font-size: 6rem;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+@media (max-width: 768px) {
+  #secondary-header {
+    font-size: 2.5rem;
+    margin-top: 15px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  #secondary-header {
+    font-size: 1.8rem;
+    margin-top: 10px;
+    padding: 5px 5px;
+  }
 }
 
 .forms-container {
@@ -948,7 +996,8 @@ form input {
 
 /** Profile Page Styles */
 .profile-first-container {
-  width: 1450px;
+  width: 100%;
+  max-width: 1450px;
   margin: 70px auto;
   display: flex;
   gap: 30px;
@@ -957,8 +1006,7 @@ form input {
   box-sizing: border-box;
 }
 
-.profile-container,
-.profile-pie-container {
+.profile-container {
   flex: 1 1 50%;
   padding: 30px;
   background-color: rgba(212, 212, 212, 0.3);
@@ -971,18 +1019,35 @@ form input {
   min-width: 0;
 }
 
+.profile-pie-container {
+  flex: 1 1 50%;
+  padding: 20px;
+  background-color: rgba(212, 212, 212, 0.3);
+  border-radius: 15px;
+  animation: fadeInUp 1.5s ease-out;
+  animation-delay: 0.6s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  margin: 0;
+  min-width: 0;
+}
+
 @media (max-width: 768px) {
   .profile-first-container {
-    width: 100%;
     flex-direction: column;
     margin: 70px auto 30px;
     padding: 0 10px;
   }
 
-  .profile-container,
-  .profile-pie-container {
+  .profile-container {
     flex: 1 1 100%;
     padding: 20px;
+    border-radius: 12px;
+  }
+
+  .profile-pie-container {
+    flex: 1 1 100%;
+    padding: 15px;
     border-radius: 12px;
   }
 
@@ -1002,30 +1067,6 @@ form input {
   justify-content: flex-start;
 }
 
-.profile-pie-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.profile-pie-container svg {
-  max-width: 100%;
-  height: auto;
-}
-
-@media (max-width: 768px) {
-  .profile-pie-container {
-    max-width: 100%;
-  }
-
-  .profile-pie-container svg {
-    max-width: 80vw;
-    height: auto;
-  }
-}
-
 .profile-container h2 {
   color: var(--white);
   font-size: 2.4rem;
@@ -1038,6 +1079,20 @@ form input {
   color: var(--white);
   text-decoration: none;
   text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+/* Pie chart SVG styling */
+.profile-pie-container svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .profile-pie-container svg {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 #drop-zone {

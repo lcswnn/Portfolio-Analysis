@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close menu when clicking outside
     document.addEventListener('click', function(event) {
-      if (!event.target.closest('#navbar')) {
+      if (!event.target.closest('#nav-bar')) {
         hamburgerMenu.classList.remove('active');
         navList.classList.remove('active');
       }
