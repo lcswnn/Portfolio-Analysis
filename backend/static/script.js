@@ -226,6 +226,9 @@ const animateCounter = (element, targetValue, duration = 3000) => {
 };
 
 // Observer for the parent container of counters (to detect when they come into view)
+const isMobileCounter = window.innerWidth <= 768;
+const counterRootMargin = isMobileCounter ? '0px 0px 0px 0px' : '0px 0px -30px 0px'; // Very low threshold on mobile
+
 const counterParentObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -243,7 +246,7 @@ const counterParentObserver = new IntersectionObserver((entries) => {
   });
 }, {
   threshold: 0.0,
-  rootMargin: '0px 0px -30px 0px'
+  rootMargin: counterRootMargin
 });
 
 // Observe parent containers that have counters
