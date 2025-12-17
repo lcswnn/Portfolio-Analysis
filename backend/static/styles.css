@@ -1569,6 +1569,156 @@ form input {
     text-decoration: underline;
 }
 
+/* Curated Picks Section */
+.curated-section {
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    padding: 0 20px;
+}
+
+.curated-header {
+    color: var(--white);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.curated-subheader {
+    color: #888;
+    font-size: 1.3rem;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.curated-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.curated-card {
+    background: var(--dark-grey);
+    border-radius: 12px;
+    padding: 25px;
+    opacity: 0.8;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.curated-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.curated-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.curated-card-header h3 {
+    color: var(--white);
+    font-size: 1.6rem;
+    margin: 0;
+}
+
+.curated-badge {
+    font-size: 0.9rem;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-weight: 600;
+}
+
+.best-overall .curated-badge {
+    background: rgba(119, 242, 161, 0.2);
+    color: var(--green);
+}
+
+.income-focused .curated-badge {
+    background: rgba(79, 118, 246, 0.2);
+    color: var(--blue);
+}
+
+.low-risk .curated-badge {
+    background: rgba(236, 125, 125, 0.2);
+    color: var(--red);
+}
+
+.curated-description {
+    color: #999;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.curated-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.curated-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.curated-list li:last-child {
+    border-bottom: none;
+}
+
+.curated-ticker {
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.curated-stats {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.curated-stats .prob {
+    color: var(--green);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.curated-stats .detail {
+    color: #888;
+    font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+    .curated-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .curated-section {
+        padding: 0 15px;
+    }
+
+    .curated-header {
+        font-size: 2rem;
+    }
+
+    .curated-subheader {
+        font-size: 1.1rem;
+    }
+
+    .curated-card {
+        padding: 20px;
+    }
+
+    .curated-card-header h3 {
+        font-size: 1.4rem;
+    }
+}
+
 .top-recommendations {
     color: var(--white);
     font-size: 2.3rem;

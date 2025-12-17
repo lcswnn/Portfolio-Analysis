@@ -318,12 +318,37 @@ def optimize():
     top_picks = latest[latest['prob_beat_market'] >= 0.5].sort_values(
         'prob_beat_market', ascending=False
     ).head(20)
-    
+
     # Convert to list of dicts for template
     recommendations = top_picks[[
         'ticker', 'prob_beat_market', 'sharpe', 'momentum', 'momentum_accel', 'volatility', 'dividend_yield', 'avg_correlation', 'market_correlation'
     ]].to_dict('records')
-    
+
+    # === CURATED PICKS ===
+    # Filter to stocks with >50% probability as baseline
+    candidates = latest[latest['prob_beat_market'] >= 0.5].copy()
+
+    # Best Overall: High probability + positive Sharpe ratio (risk-adjusted returns)
+    best_overall = candidates[candidates['sharpe'] > 0].sort_values(
+        'prob_beat_market', ascending=False
+    ).head(5)[['ticker', 'prob_beat_market', 'sharpe', 'volatility', 'dividend_yield']].to_dict('records')
+
+    # Income Focused: Best dividend yields (>1%) with decent probability
+    income_focused = candidates[candidates['dividend_yield'] >= 0.01].sort_values(
+        ['dividend_yield', 'prob_beat_market'], ascending=[False, False]
+    ).head(5)[['ticker', 'prob_beat_market', 'sharpe', 'volatility', 'dividend_yield']].to_dict('records')
+
+    # Low Risk: Lower volatility (<50%) with good probability
+    low_risk = candidates[candidates['volatility'] < 0.5].sort_values(
+        ['volatility', 'prob_beat_market'], ascending=[True, False]
+    ).head(5)[['ticker', 'prob_beat_market', 'sharpe', 'volatility', 'dividend_yield']].to_dict('records')
+
+    curated_picks = {
+        'best_overall': best_overall,
+        'income_focused': income_focused,
+        'low_risk': low_risk
+    }
+
     # Summary stats
     stats = {
         'total_analyzed': len(latest),
@@ -334,8 +359,8 @@ def optimize():
         'max_prob': latest['prob_beat_market'].max() * 100,
         'last_updated': latest_date.strftime('%Y-%m-%d')
     }
-    
-    return render_template('recommend.html', recommendations=recommendations, stats=stats)
+
+    return render_template('recommend.html', recommendations=recommendations, stats=stats, curated_picks=curated_picks)
 
 def get_recommendations_from_csv(csv_path=None):
     """Helper function to load CSV and generate recommendations."""

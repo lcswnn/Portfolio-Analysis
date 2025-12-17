@@ -57,6 +57,74 @@
         </div>
         <p class="last-updated">Last data from: <span id="last-updated-date">{{ stats.last_updated }}</span></p>
     </div>
+    <!-- Curated Picks Section -->
+    <div class="curated-section fadeInUp-animation">
+        <h2 class="curated-header">Our Top Picks For You</h2>
+        <p class="curated-subheader">Curated recommendations based on different investment strategies</p>
+
+        <div class="curated-grid">
+            <!-- Best Overall -->
+            <div class="curated-card best-overall">
+                <div class="curated-card-header">
+                    <h3>Best Overall</h3>
+                    <span class="curated-badge">High Conviction</span>
+                </div>
+                <p class="curated-description">Highest probability of beating the market with positive risk-adjusted returns</p>
+                <ul class="curated-list">
+                    {% for stock in curated_picks.best_overall %}
+                    <li>
+                        <span class="curated-ticker">{{ stock.ticker }}</span>
+                        <span class="curated-stats">
+                            <span class="prob">{{ "%.1f"|format(stock.prob_beat_market * 100) }}%</span>
+                            <span class="detail">Sharpe: {{ "%.2f"|format(stock.sharpe) }}</span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Income Focused -->
+            <div class="curated-card income-focused">
+                <div class="curated-card-header">
+                    <h3>Income Focused</h3>
+                    <span class="curated-badge">Dividend Payers</span>
+                </div>
+                <p class="curated-description">Strong dividend yields for passive income seekers</p>
+                <ul class="curated-list">
+                    {% for stock in curated_picks.income_focused %}
+                    <li>
+                        <span class="curated-ticker">{{ stock.ticker }}</span>
+                        <span class="curated-stats">
+                            <span class="prob">{{ "%.1f"|format(stock.prob_beat_market * 100) }}%</span>
+                            <span class="detail">Yield: {{ "%.2f"|format(stock.dividend_yield * 100) }}%</span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Low Risk -->
+            <div class="curated-card low-risk">
+                <div class="curated-card-header">
+                    <h3>Low Risk</h3>
+                    <span class="curated-badge">Stable Picks</span>
+                </div>
+                <p class="curated-description">Lower volatility stocks for conservative investors</p>
+                <ul class="curated-list">
+                    {% for stock in curated_picks.low_risk %}
+                    <li>
+                        <span class="curated-ticker">{{ stock.ticker }}</span>
+                        <span class="curated-stats">
+                            <span class="prob">{{ "%.1f"|format(stock.prob_beat_market * 100) }}%</span>
+                            <span class="detail">Vol: {{ "%.1f"|format(stock.volatility * 100) }}%</span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="optimize-container fadeInUp-animation">
         <!-- Summary Stats -->
         <p class="top-recommendations">Top 20 CatBoost Model Recommendations:</p>
