@@ -1574,6 +1574,8 @@ form input {
     max-width: 1200px;
     margin: 0 auto 40px auto;
     padding: 0 20px;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .curated-header {
@@ -1594,6 +1596,7 @@ form input {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
+    max-width: 100%;
 }
 
 .curated-card {
@@ -1602,6 +1605,8 @@ form input {
     padding: 25px;
     opacity: 0.8;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .curated-card:hover {
@@ -1663,6 +1668,8 @@ form input {
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .curated-list li:last-child {
@@ -1679,6 +1686,7 @@ form input {
     display: flex;
     gap: 15px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .curated-stats .prob {
