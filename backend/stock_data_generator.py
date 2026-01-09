@@ -181,7 +181,7 @@ def create_feature_dataset(prices, lookback_months=6, forward_months=3):
     """
 
     # Calculate daily returns
-    returns = prices.pct_change()
+    returns = prices.pct_change(fill_method=None)
 
     # We'll build features at monthly intervals
     monthly_dates = prices.resample('M').last().index
@@ -363,7 +363,7 @@ def create_latest_features(prices, lookback_months=6):
         DataFrame with one row per ticker, containing features for prediction
     """
     # Calculate daily returns
-    returns = prices.pct_change()
+    returns = prices.pct_change(fill_method=None)
     
     # Use the most recent date
     latest_date = prices.index[-1]
