@@ -1,14 +1,21 @@
 import pandas as pd
 import numpy as np
 from catboost import CatBoostClassifier
+import os
 
-# Load features
-df = pd.read_csv('../backend/stock_features.csv')
+# Determine paths
+script_dir = os.path.dirname(os.path.abspath(__file__))
+historical_path = os.path.join(script_dir, '../backend/stock_features.csv')
+latest_path = os.path.join(script_dir, '../backend/latest_features.csv')
+
+# Load historical features for training
+df = pd.read_csv(historical_path)
 df['date'] = pd.to_datetime(df['date'])
 df = df.replace([np.inf, -np.inf], np.nan)
 df = df.dropna()
 
-print(f"Loaded {len(df)} samples")
+print(f"Loaded {len(df)} historical samples for training")
+print(f"Historical date range: {df['date'].min().strftime('%Y-%m-%d')} to {df['date'].max().strftime('%Y-%m-%d')}")
 
 feature_cols = [
     'momentum', 'volatility', 'avg_correlation', 'max_correlation',
@@ -16,28 +23,7 @@ feature_cols = [
     'dividend_yield'
 ]
 
-# Build correlation matrix from the features data
-# Pivot to get tickers as columns, dates as rows, using avg_correlation as proxy
-# Or better: build correlation from the feature vectors themselves
-
-def build_correlation_matrix(df):
-    """
-    Build a correlation matrix between stocks based on their feature profiles over time.
-    Stocks with similar feature movements are considered correlated.
-    """
-    # Pivot: rows = dates, columns = tickers, values = momentum (price movement proxy)
-    pivot = df.pivot_table(index='date', columns='ticker', values='momentum', aggfunc='first')
-    
-    # Calculate correlation between stocks based on how their momentum moves together
-    corr_matrix = pivot.corr()
-    
-    return corr_matrix
-
-print("Building correlation matrix...")
-corr_matrix = build_correlation_matrix(df)
-print(f"Correlation matrix shape: {corr_matrix.shape}")
-
-# Train model
+# Train model on historical data
 print("\nTraining CatBoost model...")
 model = CatBoostClassifier(
     iterations=200,
@@ -49,11 +35,42 @@ model = CatBoostClassifier(
 model.fit(df[feature_cols], df['beat_market'])
 print("Model trained!")
 
-# Get latest data
-latest_date = df['date'].max()
-latest = df[df['date'] == latest_date].copy()
+# Check if we have fresh latest_features.csv for predictions
+if os.path.exists(latest_path):
+    print(f"\nLoading fresh features from {latest_path}...")
+    latest = pd.read_csv(latest_path)
+    latest['date'] = pd.to_datetime(latest['date'])
+    latest = latest.replace([np.inf, -np.inf], np.nan)
+    latest = latest.dropna()
+    latest_date = latest['date'].max()
+    print(f"Using LIVE data from {latest_date.strftime('%Y-%m-%d')}")
+else:
+    print(f"\nNo fresh features found at {latest_path}")
+    print("Falling back to historical data (run 'python stock_data_generator.py --latest' for current data)")
+    latest_date = df['date'].max()
+    latest = df[df['date'] == latest_date].copy()
+    print(f"Using HISTORICAL data from {latest_date.strftime('%Y-%m-%d')}")
+
+# Generate predictions
 latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
 print(f"Analyzing {len(latest)} stocks from {latest_date.strftime('%Y-%m-%d')}")
+
+
+def build_correlation_matrix(df):
+    """
+    Build a correlation matrix between stocks based on their feature profiles over time.
+    Stocks with similar feature movements are considered correlated.
+    """
+    # Pivot: rows = dates, columns = tickers, values = momentum (price movement proxy)
+    pivot = df.pivot_table(index='date', columns='ticker', values='momentum', aggfunc='first')
+
+    return pivot.corr()
+
+
+# Build correlation matrix from historical data (for diversification analysis)
+print("\nBuilding correlation matrix from historical data...")
+corr_matrix = build_correlation_matrix(df)
+print(f"Correlation matrix shape: {corr_matrix.shape}")
 
 
 def get_diversified_recommendations(df, corr_matrix, min_prob=0.5, max_correlation=0.5, top_n=20):

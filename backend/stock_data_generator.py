@@ -349,8 +349,156 @@ def generate_stock_features(output_path='stock_features.csv'):
         raise
 
 
+def create_latest_features(prices, lookback_months=6):
+    """
+    Create features for the MOST RECENT date only (for inference/predictions).
+    Unlike create_feature_dataset(), this does NOT require future returns
+    since we're predicting, not training.
+    
+    Args:
+        prices: DataFrame with price data (columns = tickers, index = dates)
+        lookback_months: Number of months to use for feature calculation
+        
+    Returns:
+        DataFrame with one row per ticker, containing features for prediction
+    """
+    # Calculate daily returns
+    returns = prices.pct_change()
+    
+    # Use the most recent date
+    latest_date = prices.index[-1]
+    
+    # Get lookback window
+    lookback_start = latest_date - pd.DateOffset(months=lookback_months)
+    lookback_returns = returns[lookback_start:latest_date]
+    
+    # Calculate correlation matrix for this period
+    corr_matrix = lookback_returns.corr()
+    
+    # Market proxy (equal-weighted average of all stocks)
+    market_return = lookback_returns.mean(axis=1)
+    
+    rows = []
+    
+    for ticker in prices.columns:
+        try:
+            ticker_returns = lookback_returns[ticker].dropna()
+            
+            if len(ticker_returns) < 20:  # Skip if not enough data
+                continue
+            
+            # === FEATURES (same as create_feature_dataset) ===
+            
+            # 1. Momentum (past return over lookback period)
+            lookback_start_idx = max(0, len(prices[ticker].loc[:latest_date]) - lookback_months * 21)
+            momentum = (prices[ticker].loc[:latest_date].iloc[-1] / 
+                       prices[ticker].loc[:latest_date].iloc[lookback_start_idx] - 1)
+            
+            # 2. Volatility (std of daily returns, annualized)
+            volatility = ticker_returns.std() * np.sqrt(252)
+            
+            # 3. Average correlation with all other stocks
+            ticker_corrs = corr_matrix[ticker].drop(ticker)
+            avg_correlation = ticker_corrs.mean()
+            
+            # 4. Max correlation (how tied to another stock)
+            max_correlation = ticker_corrs.max()
+            
+            # 5. Min correlation (most diversifying pair)
+            min_correlation = ticker_corrs.min()
+            
+            # 6. Correlation with "market" (equal-weight avg)
+            market_corr = ticker_returns.corr(market_return)
+            
+            # 7. Sharpe ratio (return / volatility)
+            period_return = ticker_returns.sum()
+            sharpe = period_return / (ticker_returns.std() + 1e-6)
+            
+            # 8. Recent vs older momentum (trend acceleration)
+            recent_return = ticker_returns.iloc[-21:].sum() if len(ticker_returns) >= 21 else ticker_returns.sum()
+            older_return = ticker_returns.iloc[:-21].sum() if len(ticker_returns) > 21 else 0
+            momentum_accel = recent_return - older_return
+            
+            rows.append({
+                'ticker': ticker,
+                'date': latest_date,
+                'momentum': momentum,
+                'volatility': volatility,
+                'avg_correlation': avg_correlation,
+                'max_correlation': max_correlation,
+                'min_correlation': min_correlation,
+                'market_correlation': market_corr,
+                'sharpe': sharpe,
+                'momentum_accel': momentum_accel,
+            })
+            
+        except Exception as e:
+            continue
+    
+    return pd.DataFrame(rows)
+
+
+def fetch_latest_features(output_path=None):
+    """
+    Fetch fresh price data and create features for the most recent date.
+    This is used for making predictions with a trained model.
+    
+    Args:
+        output_path: Optional path to save the latest features CSV
+        
+    Returns:
+        DataFrame with latest features for all stocks
+    """
+    try:
+        print("=" * 60)
+        print("Fetching latest stock data for predictions...")
+        print("=" * 60)
+        
+        # Step 1: Fetch tickers
+        large_list, mid_list, small_list = get_all_tickers()
+        valid_tickers = filter_tickers(large_list, mid_list, small_list)
+        
+        # Step 2: Download recent price data (only need ~8 months for 6-month lookback)
+        print("\nDownloading recent price data...")
+        prices = download_in_batches(valid_tickers, period='1y', interval='1d', batch_size=30, delay=2)
+        
+        # Filter out bad data
+        prices = prices.dropna(axis=1, how='all')
+        min_data_points = 120  # ~6 months of trading days
+        prices = prices.dropna(axis=1, thresh=min_data_points)
+        print(f"Valid tickers: {len(prices.columns)}")
+        
+        # Step 3: Create features for the latest date
+        print("\nCreating features for latest date...")
+        latest_features = create_latest_features(prices, lookback_months=6)
+        print(f"Created features for {len(latest_features)} stocks")
+        print(f"Latest date: {latest_features['date'].iloc[0] if len(latest_features) > 0 else 'N/A'}")
+        
+        # Step 4: Add dividend data
+        unique_tickers = latest_features['ticker'].unique()
+        latest_features = add_dividend_features(latest_features, unique_tickers)
+        
+        # Step 5: Save if path provided
+        if output_path:
+            latest_features.to_csv(output_path, index=False)
+            print(f"\nSaved to {output_path}")
+        
+        return latest_features
+        
+    except Exception as e:
+        print(f"Error fetching latest features: {e}")
+        raise
+
+
 if __name__ == '__main__':
     # CLI usage
     import sys
-    output_path = sys.argv[1] if len(sys.argv) > 1 else 'stock_features.csv'
-    generate_stock_features(output_path)
+    
+    if len(sys.argv) > 1 and sys.argv[1] == '--latest':
+        # Generate only latest features for predictions
+        output_path = sys.argv[2] if len(sys.argv) > 2 else 'latest_features.csv'
+        fetch_latest_features(output_path)
+    else:
+        # Generate full historical dataset for training
+        output_path = sys.argv[1] if len(sys.argv) > 1 else 'stock_features.csv'
+        generate_stock_features(output_path)

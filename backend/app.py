@@ -286,7 +286,7 @@ def portfolio():
 @app.route('/recommendations')
 @login_required
 def optimize():
-    # Load and prepare data
+    # Load historical data for training
     csv_path = os.path.join(os.path.dirname(__file__), 'stock_features.csv')
     df = pd.read_csv(csv_path)
     df['date'] = pd.to_datetime(df['date'])
@@ -299,7 +299,7 @@ def optimize():
         'dividend_yield'
     ]
     
-    # Train model
+    # Train model on historical data
     model = CatBoostClassifier(
         iterations=200,
         depth=4,
@@ -309,9 +309,24 @@ def optimize():
     )
     model.fit(df[feature_cols], df['beat_market'])
     
-    # Get latest data
-    latest_date = df['date'].max()
-    latest = df[df['date'] == latest_date].copy()
+    # Check if we have fresh latest_features.csv for predictions
+    latest_features_path = os.path.join(os.path.dirname(__file__), 'latest_features.csv')
+    
+    if os.path.exists(latest_features_path):
+        # Use the fresh features for predictions
+        latest = pd.read_csv(latest_features_path)
+        latest['date'] = pd.to_datetime(latest['date'])
+        latest = latest.replace([np.inf, -np.inf], np.nan)
+        latest = latest.dropna()
+        latest_date = latest['date'].max()
+        data_source = "live"
+    else:
+        # Fall back to latest date in historical data
+        latest_date = df['date'].max()
+        latest = df[df['date'] == latest_date].copy()
+        data_source = "historical"
+    
+    # Generate predictions
     latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
     
     # Get top recommendations
@@ -357,27 +372,28 @@ def optimize():
         'above_60': len(latest[latest['prob_beat_market'] > 0.6]),
         'avg_prob': latest['prob_beat_market'].mean() * 100,
         'max_prob': latest['prob_beat_market'].max() * 100,
-        'last_updated': latest_date.strftime('%Y-%m-%d')
+        'last_updated': latest_date.strftime('%Y-%m-%d'),
+        'data_source': data_source  # 'live' or 'historical'
     }
 
     return render_template('recommend.html', recommendations=recommendations, stats=stats, curated_picks=curated_picks)
 
 def get_recommendations_from_csv(csv_path=None):
-    """Helper function to load CSV and generate recommendations."""
+    """
+    Helper function to load CSV and generate recommendations.
+    Uses historical data for training, but applies to latest features if available.
+    """
     if csv_path is None:
         csv_path = os.path.join(os.path.dirname(__file__), 'stock_features.csv')
-    df = pd.read_csv(csv_path)
-    df['date'] = pd.to_datetime(df['date'])
-    df = df.replace([np.inf, -np.inf], np.nan)
-    df = df.dropna()
 
+    df = _extracted_from_get_recommendations_from_csv_36(csv_path)
     feature_cols = [
         'momentum', 'volatility', 'avg_correlation', 'max_correlation',
         'min_correlation', 'market_correlation', 'sharpe', 'momentum_accel',
         'dividend_yield'
     ]
 
-    # Train model
+    # Train model on historical data
     model = CatBoostClassifier(
         iterations=200,
         depth=4,
@@ -387,9 +403,20 @@ def get_recommendations_from_csv(csv_path=None):
     )
     model.fit(df[feature_cols], df['beat_market'])
 
-    # Get latest data
-    latest_date = df['date'].max()
-    latest = df[df['date'] == latest_date].copy()
+    # Check if we have fresh latest_features.csv for predictions
+    latest_features_path = os.path.join(os.path.dirname(__file__), 'latest_features.csv')
+
+    if os.path.exists(latest_features_path):
+        latest = _extracted_from_get_recommendations_from_csv_36(latest_features_path)
+        latest_date = latest['date'].max()
+        print(f"Using fresh features from {latest_date.strftime('%Y-%m-%d')}")
+    else:
+        # Fall back to latest date in historical data
+        latest_date = df['date'].max()
+        latest = df[df['date'] == latest_date].copy()
+        print(f"Using historical features from {latest_date.strftime('%Y-%m-%d')} (run 'Refresh Latest' for current data)")
+
+    # Generate predictions
     latest['prob_beat_market'] = model.predict_proba(latest[feature_cols])[:, 1]
 
     # Get top recommendations
@@ -415,6 +442,16 @@ def get_recommendations_from_csv(csv_path=None):
 
     return recommendations, stats
 
+
+# TODO Rename this here and in `get_recommendations_from_csv`
+def _extracted_from_get_recommendations_from_csv_36(arg0):
+        # Use the fresh features for predictions
+    result = pd.read_csv(arg0)
+    result['date'] = pd.to_datetime(result['date'])
+    result = result.replace([np.inf, -np.inf], np.nan)
+    result = result.dropna()
+    return result
+
 @app.route('/api/refresh-recommendations', methods=['POST'])
 @login_required
 def refresh_recommendations():
@@ -436,7 +473,7 @@ def refresh_recommendations():
 @app.route('/api/regenerate-stock-data', methods=['POST'])
 @login_required
 def regenerate_stock_data():
-    """API endpoint to regenerate stock_features.csv from yfinance data"""
+    """API endpoint to regenerate stock_features.csv from yfinance data (full historical for training)"""
     global REGENERATION_IN_PROGRESS
 
     try:
@@ -464,7 +501,50 @@ def regenerate_stock_data():
 
         return jsonify({
             'success': True,
-            'message': 'Stock data regeneration started. This may take 1020 minutes. The recommendations page will update automatically when complete.'
+            'message': 'Stock data regeneration started. This may take 10-20 minutes. The recommendations page will update automatically when complete.'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/refresh-latest-predictions', methods=['POST'])
+@login_required
+def refresh_latest_predictions():
+    """
+    API endpoint to fetch fresh market data and generate up-to-date predictions.
+    Uses the existing trained model but fetches today's features from yfinance.
+    This is faster than full regeneration (~5 min vs 20 min).
+    """
+    global REGENERATION_IN_PROGRESS
+
+    try:
+        from .stock_data_generator import fetch_latest_features
+        import threading
+
+        def fetch_and_predict():
+            global REGENERATION_IN_PROGRESS
+            try:
+                REGENERATION_IN_PROGRESS = True
+                # Fetch latest features
+                latest_features_path = os.path.join(os.path.dirname(__file__), 'latest_features.csv')
+                fetch_latest_features(latest_features_path)
+                print("Latest predictions refresh complete!")
+            except Exception as e:
+                print(f"Error in refresh thread: {e}")
+            finally:
+                REGENERATION_IN_PROGRESS = False
+
+        # Start in background thread
+        thread = threading.Thread(target=fetch_and_predict)
+        thread.daemon = True
+        thread.start()
+
+        return jsonify({
+            'success': True,
+            'message': 'Fetching latest market data. This takes about 5 minutes. Recommendations will update when complete.'
         })
     except Exception as e:
         return jsonify({
