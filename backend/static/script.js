@@ -708,6 +708,105 @@ function updateRecommendationsFromData(data) {
     });
 }
 
+// Table sorting functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.querySelector('.recommendations-table');
+    if (!table) return;
+
+    const headers = table.querySelectorAll('th');
+    const tbody = table.querySelector('tbody');
+
+    // Store original row order for reset
+    let originalRows = [];
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => originalRows.push(row.cloneNode(true)));
+
+    // Sort state: 'none' -> 'asc' -> 'desc' -> 'none'
+    const sortStates = {};
+    headers.forEach((header, index) => {
+        sortStates[index] = 'none';
+    });
+
+    headers.forEach((header, columnIndex) => {
+        // Skip the Rank column (index 0) since it will be recalculated
+        header.style.cursor = 'pointer';
+        header.setAttribute('title', 'Click to sort');
+
+        header.addEventListener('click', function() {
+            // Clear sort indicators from all headers
+            headers.forEach((h, i) => {
+                if (i !== columnIndex) {
+                    sortStates[i] = 'none';
+                    h.classList.remove('sort-asc', 'sort-desc');
+                }
+            });
+
+            // Cycle through sort states
+            if (sortStates[columnIndex] === 'none') {
+                sortStates[columnIndex] = 'asc';
+                header.classList.add('sort-asc');
+                header.classList.remove('sort-desc');
+            } else if (sortStates[columnIndex] === 'asc') {
+                sortStates[columnIndex] = 'desc';
+                header.classList.add('sort-desc');
+                header.classList.remove('sort-asc');
+            } else {
+                sortStates[columnIndex] = 'none';
+                header.classList.remove('sort-asc', 'sort-desc');
+            }
+
+            // Sort or reset the table
+            if (sortStates[columnIndex] === 'none') {
+                // Reset to original order
+                tbody.innerHTML = '';
+                originalRows.forEach((row, index) => {
+                    const newRow = row.cloneNode(true);
+                    newRow.querySelector('td:first-child').textContent = index + 1;
+                    tbody.appendChild(newRow);
+                });
+            } else {
+                // Sort the rows
+                const rowsArray = Array.from(tbody.querySelectorAll('tr'));
+
+                rowsArray.sort((a, b) => {
+                    const aCell = a.querySelectorAll('td')[columnIndex];
+                    const bCell = b.querySelectorAll('td')[columnIndex];
+
+                    let aValue = aCell.textContent.trim();
+                    let bValue = bCell.textContent.trim();
+
+                    // Remove % signs and parse as numbers
+                    aValue = aValue.replace('%', '');
+                    bValue = bValue.replace('%', '');
+
+                    // Try to parse as numbers
+                    const aNum = parseFloat(aValue);
+                    const bNum = parseFloat(bValue);
+
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        // Numeric sort
+                        return sortStates[columnIndex] === 'asc' ? aNum - bNum : bNum - aNum;
+                    } else {
+                        // String sort
+                        if (sortStates[columnIndex] === 'asc') {
+                            return aValue.localeCompare(bValue);
+                        } else {
+                            return bValue.localeCompare(aValue);
+                        }
+                    }
+                });
+
+                // Re-render sorted rows with updated rank
+                tbody.innerHTML = '';
+                rowsArray.forEach((row, index) => {
+                    row.querySelector('td:first-child').textContent = index + 1;
+                    tbody.appendChild(row);
+                });
+            }
+        });
+    });
+});
+
 // Show notification message
 function showNotification(message, type = 'info') {
     // Create notification element

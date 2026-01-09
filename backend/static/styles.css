@@ -1892,6 +1892,36 @@ form input {
     color: var(--white);
     font-weight: 600;
     border-bottom: 2px solid var(--dark-grey);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.recommendations-table th:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.recommendations-table th::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.recommendations-table th.sort-asc::after {
+    content: '▲';
+    opacity: 1;
+    color: var(--green);
+}
+
+.recommendations-table th.sort-desc::after {
+    content: '▼';
+    opacity: 1;
+    color: var(--green);
 }
 
 .recommendations-table td {
