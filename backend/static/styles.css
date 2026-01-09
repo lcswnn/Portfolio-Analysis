@@ -1571,9 +1571,9 @@ form input {
 
 /* Curated Picks Section */
 .curated-section {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto 40px auto;
-    padding: 0 20px;
+    padding: 0 30px;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -1593,20 +1593,20 @@ form input {
 }
 
 .curated-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     max-width: 100%;
 }
 
 .curated-card {
     background: var(--dark-grey);
     border-radius: 12px;
-    padding: 25px;
+    padding: 20px 25px;
     opacity: 0.8;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    min-width: 0;
-    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .curated-card:hover {
@@ -1702,8 +1702,7 @@ form input {
 
 @media (max-width: 900px) {
     .curated-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 15px;
     }
 
     .curated-section {
@@ -1719,7 +1718,7 @@ form input {
     }
 
     .curated-card {
-        padding: 20px;
+        padding: 15px 20px;
     }
 
     .curated-card-header h3 {
