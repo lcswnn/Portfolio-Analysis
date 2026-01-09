@@ -1726,12 +1726,145 @@ form input {
     }
 }
 
+/* Top 5 Picks Section */
+.top-picks-section {
+    max-width: 1400px;
+    margin: 0 auto 40px auto;
+    padding: 0 30px;
+    box-sizing: border-box;
+}
+
+.top-picks-header {
+    color: var(--white);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.top-picks-subheader {
+    color: #888;
+    font-size: 1.3rem;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.top-picks-weights {
+    color: #666;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.top-picks-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.top-pick-card {
+    background: var(--dark-grey);
+    border-radius: 10px;
+    padding: 18px 25px;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.top-pick-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.top-pick-rank {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--green);
+    min-width: 50px;
+}
+
+.top-pick-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+}
+
+.top-pick-ticker {
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.top-pick-score {
+    color: var(--green);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.top-pick-stats {
+    display: flex;
+    gap: 25px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.top-pick-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.top-pick-stat .stat-label {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.top-pick-stat .stat-value {
+    color: var(--white);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .top-picks-section {
+        padding: 0 15px;
+    }
+
+    .top-picks-header {
+        font-size: 2rem;
+    }
+
+    .top-picks-subheader {
+        font-size: 1.1rem;
+    }
+
+    .top-picks-weights {
+        font-size: 0.9rem;
+    }
+
+    .top-pick-card {
+        flex-wrap: wrap;
+        padding: 15px 20px;
+    }
+
+    .top-pick-stats {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+        justify-content: space-around;
+    }
+}
+
 .top-recommendations {
     color: var(--white);
     font-size: 2.3rem;
     margin-bottom: 20px;
     text-align: center;
-    font-weight: bold;  
+    font-weight: bold;
 }
 
 /* Table Styles */

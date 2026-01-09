@@ -364,6 +364,42 @@ def optimize():
         'low_risk': low_risk
     }
 
+    # === TOP 5 PICKS (Weighted Composite Score) ===
+    # Weights: Probability 40%, Sharpe 25%, Stability 20%, Momentum 15%
+    scoring_candidates = latest.copy()
+
+    # Normalize each metric to 0-1 scale
+    # Probability: already 0-1
+    scoring_candidates['norm_prob'] = scoring_candidates['prob_beat_market']
+
+    # Sharpe: normalize using min-max (cap extremes)
+    sharpe_min = scoring_candidates['sharpe'].quantile(0.05)
+    sharpe_max = scoring_candidates['sharpe'].quantile(0.95)
+    scoring_candidates['norm_sharpe'] = (scoring_candidates['sharpe'].clip(sharpe_min, sharpe_max) - sharpe_min) / (sharpe_max - sharpe_min + 1e-6)
+
+    # Stability: invert volatility (lower vol = higher score), normalize
+    vol_min = scoring_candidates['volatility'].quantile(0.05)
+    vol_max = scoring_candidates['volatility'].quantile(0.95)
+    scoring_candidates['norm_stability'] = 1 - (scoring_candidates['volatility'].clip(vol_min, vol_max) - vol_min) / (vol_max - vol_min + 1e-6)
+
+    # Momentum: normalize using min-max
+    mom_min = scoring_candidates['momentum'].quantile(0.05)
+    mom_max = scoring_candidates['momentum'].quantile(0.95)
+    scoring_candidates['norm_momentum'] = (scoring_candidates['momentum'].clip(mom_min, mom_max) - mom_min) / (mom_max - mom_min + 1e-6)
+
+    # Calculate composite score
+    scoring_candidates['composite_score'] = (
+        0.40 * scoring_candidates['norm_prob'] +
+        0.25 * scoring_candidates['norm_sharpe'] +
+        0.20 * scoring_candidates['norm_stability'] +
+        0.15 * scoring_candidates['norm_momentum']
+    )
+
+    # Get top 5 by composite score
+    top_5_picks = scoring_candidates.nlargest(5, 'composite_score')[
+        ['ticker', 'prob_beat_market', 'sharpe', 'volatility', 'momentum', 'dividend_yield', 'composite_score']
+    ].to_dict('records')
+
     # Summary stats
     stats = {
         'total_analyzed': len(latest),
@@ -376,7 +412,7 @@ def optimize():
         'data_source': data_source  # 'live' or 'historical'
     }
 
-    return render_template('recommend.html', recommendations=recommendations, stats=stats, curated_picks=curated_picks)
+    return render_template('recommend.html', recommendations=recommendations, stats=stats, curated_picks=curated_picks, top_5_picks=top_5_picks)
 
 def get_recommendations_from_csv(csv_path=None):
     """

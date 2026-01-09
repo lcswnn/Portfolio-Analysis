@@ -125,6 +125,43 @@
         </div>
     </div>
 
+    <!-- Top 5 Picks Section -->
+    <div class="top-picks-section fadeInUp-animation">
+        <h2 class="top-picks-header">Top 5 Picks This Month</h2>
+        <p class="top-picks-subheader">Our highest-rated stocks based on a weighted composite score</p>
+        <p class="top-picks-weights">Probability (40%) + Risk-Adjusted Returns (25%) + Stability (20%) + Momentum (15%)</p>
+
+        <div class="top-picks-grid">
+            {% for stock in top_5_picks %}
+            <div class="top-pick-card">
+                <div class="top-pick-rank">#{{ loop.index }}</div>
+                <div class="top-pick-info">
+                    <span class="top-pick-ticker">{{ stock.ticker }}</span>
+                    <span class="top-pick-score">Score: {{ "%.0f"|format(stock.composite_score * 100) }}</span>
+                </div>
+                <div class="top-pick-stats">
+                    <span class="top-pick-stat">
+                        <span class="stat-label">Prob</span>
+                        <span class="stat-value">{{ "%.1f"|format(stock.prob_beat_market * 100) }}%</span>
+                    </span>
+                    <span class="top-pick-stat">
+                        <span class="stat-label">Sharpe</span>
+                        <span class="stat-value">{{ "%.2f"|format(stock.sharpe) }}</span>
+                    </span>
+                    <span class="top-pick-stat">
+                        <span class="stat-label">Vol</span>
+                        <span class="stat-value">{{ "%.1f"|format(stock.volatility * 100) }}%</span>
+                    </span>
+                    <span class="top-pick-stat">
+                        <span class="stat-label">Mom</span>
+                        <span class="stat-value">{{ "%.1f"|format(stock.momentum * 100) }}%</span>
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="optimize-container fadeInUp-animation">
         <!-- Summary Stats -->
         <p class="top-recommendations">Top 20 CatBoost Model Recommendations:</p>
