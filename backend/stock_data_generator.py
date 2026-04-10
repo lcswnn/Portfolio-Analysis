@@ -237,9 +237,11 @@ def create_feature_dataset(prices, lookback_months=6, forward_months=3):
                 # 6. Correlation with "market" (equal-weight avg)
                 market_corr = ticker_returns.corr(market_return)
 
-                # 7. Sharpe ratio (return / volatility)
-                period_return = ticker_returns.sum()
-                sharpe = period_return / (ticker_returns.std() + 1e-6)
+                # 7. Sharpe ratio (annualized, textbook formula)
+                # risk_free_rate is annualized T-bill rate converted to daily
+                risk_free_rate = 0.043 / 252
+                excess_returns = ticker_returns - risk_free_rate
+                sharpe = (excess_returns.mean() / (excess_returns.std() + 1e-6)) * np.sqrt(252)
 
                 # 8. Recent vs older momentum (trend acceleration)
                 recent_return = ticker_returns.iloc[-21:].sum()  # Last month
@@ -410,9 +412,11 @@ def create_latest_features(prices, lookback_months=6):
             # 6. Correlation with "market" (equal-weight avg)
             market_corr = ticker_returns.corr(market_return)
             
-            # 7. Sharpe ratio (return / volatility)
-            period_return = ticker_returns.sum()
-            sharpe = period_return / (ticker_returns.std() + 1e-6)
+            # 7. Sharpe ratio (annualized, textbook formula)
+            # risk_free_rate is annualized T-bill rate converted to daily
+            risk_free_rate = 0.043 / 252
+            excess_returns = ticker_returns - risk_free_rate
+            sharpe = (excess_returns.mean() / (excess_returns.std() + 1e-6)) * np.sqrt(252)
             
             # 8. Recent vs older momentum (trend acceleration)
             recent_return = ticker_returns.iloc[-21:].sum() if len(ticker_returns) >= 21 else ticker_returns.sum()
