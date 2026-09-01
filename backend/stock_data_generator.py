@@ -171,7 +171,7 @@ def download_in_batches(tickers, period='5y', interval='1d', batch_size=20, dela
     return pd.DataFrame()
 
 
-def create_feature_dataset(prices, lookback_months=6, forward_months=3):
+def create_feature_dataset(prices, lookback_months=6, forward_months=1):
     """
     Create a feature dataset for ML from price data.
 
@@ -330,7 +330,7 @@ def generate_stock_features(output_path='stock_features.csv'):
 
         # Step 3: Create features
         print("\nCreating feature dataset...")
-        feature_df = create_feature_dataset(prices, lookback_months=6, forward_months=3)
+        feature_df = create_feature_dataset(prices, lookback_months=6, forward_months=1)
         print(f"Feature dataset shape: {feature_df.shape}")
         print(f"Date range: {feature_df['date'].min()} to {feature_df['date'].max()}")
 
